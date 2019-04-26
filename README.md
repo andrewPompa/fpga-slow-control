@@ -28,3 +28,5 @@ Wygenerowane pliki `images/linux/BOOT.BIN` i `images/linux/image.ub` przenosimy 
 - LED Test
 
 Program mrugający diodą LED 
+
+**Uwaga** trzeba użyć kompilatora skrośnego: `arm-linux-gnueabihf-gcc -o led-blinking led-blinking.c`!  
