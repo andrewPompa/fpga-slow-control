@@ -10,8 +10,8 @@
 
 typedef long long int u64;
 
-const int execution_count = 500;
-const int sleep_time_microseconds = 500000;
+const int execution_count = 50;
+const int sleep_time_microseconds = 250000;
 
 int main()
 {
@@ -32,10 +32,11 @@ int main()
     bram64_vptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_pbase);
     bram64_vptr[0] = 0x0;
     for (int i = 0; i < execution_count; ++i) {
-        bram64_vptr[0] = 0x1;
+        int led = i % 4;
+        int address = 0x1 << led;
+        bram64_vptr[0] = address;
         usleep(sleep_time_microseconds);
         bram64_vptr[0] = 0x0;
-        usleep(sleep_time_microseconds);
     }
     close(fd);
 
