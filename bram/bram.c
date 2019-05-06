@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 #include "bram.h"
 #include "arguments_validator.h"
 #include "properties_parser/properties_parser.h"
@@ -25,6 +27,16 @@ int main(int argc, char *argv[]) {
     }
     long bram_address_offset = get_address_offset(fp);
     long bram_highest_address = get_highest_address(fp);
+
+//    todo: dodać obsługę pamięci
+    u64 *bram64_vptr;
+    int fd = open("/dev/mem", O_RDWR | O_SYNC);
+    if (fd == -1) {
+        printf("ERROR: cannot open BRAM block...\n");
+        exit(EXIT_FAILURE);
+    }
+//    bram64_vptr = (u64 *)mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, bram_pbase);
+    mmap(NULL, bram_highest_address - bram_address_offset, PROT_READ, MAP_PRIVATE, fd, bram_address_offset);
 //    printf(
 //            "conf file location: %s, program mode %d, offset: %ld, size: %ld\n",
 //            conf_file_location,
