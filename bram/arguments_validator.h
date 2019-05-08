@@ -10,13 +10,14 @@
 char *DEFAULT_CONF_LOCATION = "bram.conf";
 
 enum MODE {
-    READ, WRITE, CLEAR
+    READ, WRITE, CLEAR, NOT_FOUND
 };
 
 typedef struct {
     enum MODE mode;
     long offset;
     long size;
+    unsigned long value;
 } program_mode;
 
 bool is_mode_argument(char *argument) {
@@ -30,7 +31,7 @@ char *validate_arguments(int argc, char *argv[]) {
 
     bool is_mode_selected = false;
     for (int i = 1; i < argc; ++i) {
-        if (is_mode_argument(argv[1]) == true) {
+        if (is_mode_argument(argv[i]) == true) {
             if (is_mode_selected == true) {
                 return "mode already set!";
             }
@@ -45,24 +46,34 @@ char *get_conf_file_location(char *argv[]) {
 }
 
 void get_program_mode(int argc, char *argv[], program_mode *program_mode_value) {
-    bool is_mode_selected = false;
-    bool is_offset_selected = false;
-    for (int i = 1; i < argc; ++i) {
-        if (is_mode_argument(argv[1]) == true) {
-            if (strcmp(argv[i], "-r") == 0) {
-                program_mode_value->mode = READ;
-            } else if (strcmp(argv[i], "-w") == 0) {
-                program_mode_value->mode = WRITE;
-            } else if (strcmp(argv[i], "-c") == 0) {
-                program_mode_value->mode = CLEAR;
-                return;
-            }
-            is_mode_selected = true;
-        } else if (is_mode_selected == true && is_offset_selected == false) {
-            program_mode_value->offset = strtol(argv[i], NULL, 0);
-            is_offset_selected = true;
-        } else if (is_mode_selected == true) {
-            program_mode_value->size = strtol(argv[i], NULL, 0);
+    int argument_offset = 1;
+    if (is_mode_argument(argv[argument_offset]) == false) {
+        argument_offset = 2;
+    } else if (is_mode_argument(argv[argument_offset]) == false) {
+        return;
+    }
+    if (strcmp(argv[argument_offset], "-r") == 0) {
+        program_mode_value->mode = READ;
+    } else if (strcmp(argv[argument_offset], "-w") == 0) {
+        program_mode_value->mode = WRITE;
+    } else if (strcmp(argv[argument_offset], "-c") == 0) {
+        program_mode_value->mode = CLEAR;
+        return;
+    }
+    if (program_mode_value->mode == READ) {
+        if (argc > argument_offset + 1) {
+            program_mode_value->offset = strtol(argv[argument_offset + 1], NULL, 0);
+        }
+        if (argc > argument_offset + 2) {
+            program_mode_value->size = strtol(argv[argument_offset +  2], NULL, 0);
+        }
+    }
+    if (program_mode_value->mode == WRITE) {
+        if (argc > argument_offset + 1) {
+            program_mode_value->value = strtol(argv[argument_offset +  1], NULL, 0);
+        }
+        if (argc > argument_offset + 2) {
+            program_mode_value->offset = strtol(argv[argument_offset +  2], NULL, 0);
         }
     }
 }
