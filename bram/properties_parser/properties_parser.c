@@ -1,63 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <errno.h>
+#include "properties_parser.h"
 
-long get_address_offset(FILE *file)
-{
-    //TODO: dokończyć tą metodę!
-    return 0x40000000;
+long get_address_offset(FILE *conf_file_location) {
+    if (conf_file_location == NULL) {
+        return ERROR_VALUE;
+    }
+    char *matching_line = find_matching_line(conf_file_location, ADDRESS_OFFSET_KEY);
+    if (matching_line == NULL) {
+        return ERROR_VALUE;
+    }
+    matching_line = find_value(matching_line, ADDRESS_OFFSET_KEY);
+    if (matching_line == NULL) {
+        return ERROR_VALUE;
+    }
+    return strtol(matching_line, NULL, 0);
 }
 
-long get_highest_address(FILE *conf_file_location)
-{
-    //TODO: dokończyć tą metodę!
-    return 0x40001FFF;
+long get_highest_address(FILE *conf_file_location) {
+    if (conf_file_location == NULL) {
+        return ERROR_VALUE;
+    }
+    char *matching_line = find_matching_line(conf_file_location, ADDRESS_HIGHEST_KEY);
+    if (matching_line == NULL) {
+        return ERROR_VALUE;
+    }
+    matching_line = find_value(matching_line, ADDRESS_HIGHEST_KEY);
+    if (matching_line == NULL) {
+        return ERROR_VALUE;
+    }
+    return strtol(matching_line, NULL, 0);
 }
 
-//char szNumbers[] = "0x40000000";
-//    char szNumbers2[] = "0x40001fff";
-//    long int li1;
-//    long int li4;
-//    li4 = strtol (szNumbers,NULL,0);
-//    li1 = strtol (szNumbers2,NULL,0);
-//    char ch;
-//
-//    FILE *fp;
-//
-//    fp = fopen("/home/andrzej/fpga/fpga-slow-control/bram/bram.conf", "r");
-//
-//    if (fp == NULL)
-//    {
-//        perror("Error while opening the file.\n");
-//        exit(EXIT_FAILURE);
-//    }
-//
-//    while((ch = fgetc(fp)) != EOF)
-//    {
-//        printf("%c", ch);
-//    }
-//
-//    fclose(fp);
-//
-//    printf ("from: %ld, to: %ld, difference is: %ld\n", li4, li1, (li1 - li4));
 
-//   FILE *fp;
-//    char *line = NULL;
-//    size_t len = 0;
-//    ssize_t read;
-//
-//    fp = fopen(file, "r");
-//    if (fp == NULL)
-//    {
-//        return -1;
-//    }
-//
-//    read = getline(&line, &len, fp);
-//    while (read != -1)
-//    {
-//        printf("Retrieved line of length %zu :\n", read);
-//        printf("%s\n", line);
-//        read = getline(&line, &len, fp);
-//    }
-//
-//    free(line);
-//    exit(EXIT_SUCCESS);
+char *find_matching_line(FILE *file, const char *string_to_find) {
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read = getline(&line, &len, file);
+    char *key = NULL;
+    while (read != -1) {
+        key = strstr(line, string_to_find);
+        if (key != NULL) {
+            break;
+        }
+        read = getline(&line, &len, file);
+    }
+    fclose(file);
+    return key;
+}
+
+char *find_value(char *line, const char *key) {
+    line += strlen(key);
+
+    bool found_equals_char = false;
+    char current_char = line[0];
+    while (current_char != '\0') {
+        if (current_char == '=') {
+            found_equals_char = true;
+        } else if (current_char != ' ' && found_equals_char == true) {
+            return line;
+        }
+        ++line;
+        current_char = line[0];
+    }
+    return NULL;
+}

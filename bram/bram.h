@@ -18,5 +18,5 @@ void print_help(char* program_name) {
 }
 
 //---> read
-void read();
+void readBram();
 //---> write
