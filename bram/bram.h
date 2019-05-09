@@ -10,13 +10,17 @@ void print_help(char* program_name) {
            "[bram.conf] config file location, if location will not be provided, program will search file in current location\n"
            "--------------- MODES ---------------\n"
            "-r [OFFSET] [SIZE] read memory block, if none of additional options will be provided, all BRAM block will be printed\n"
-           "-w VALUE [OFFSET] [SIZE] write to memory block, if only VALUE will be set, value will be write to all BRAM block\n"
-           "\twhen OFFSET is also set, value will be write from that offset to end BRAM block\n"
-           "\twhen SIZE is set, only that memory block will be changed. If SIZE is bigger than VALUE, error will be thrown\n"
+           "\tOFFSET (num of bytes from starting address), starting position to read the data\n"
+           "\tSIZE (num of bytes from starting address), how big block to read should be\n"
+           "-w VALUE [OFFSET] write to memory\n"
+           "\tVALUE value to put in memory, max value: 0xFFFFFFFF (4 bytes)\n"
+           "\tOFFSET address relative to BRAM staring position, where value will be set. Smallest block is byte.\n"
            "-c clears BRAM\n",
            program_name);
+//    "\twhen SIZE is set, only that memory block will be changed. If SIZE is bigger than VALUE, error will be thrown\n"
 }
 
 //---> read
-void readBram();
+void read_from_bram(long start_address, long max_address, long offset_bytes, long word_size);
+void write_to_bram(long start_address, long max_address, char *bytes, long offset);
 //---> write

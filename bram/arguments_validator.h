@@ -17,7 +17,8 @@ typedef struct {
     enum MODE mode;
     long offset;
     long size;
-    unsigned long value;
+    char * value;
+    int value_size;
 } program_mode;
 
 bool is_mode_argument(char *argument) {
@@ -45,6 +46,29 @@ char *get_conf_file_location(char *argv[]) {
     return is_mode_argument(argv[1]) == false ? argv[1] : DEFAULT_CONF_LOCATION;
 }
 
+char *map_hex_value_to_bytes(char* hex_value, int *size) {
+    if (strlen(hex_value) <= 2) {
+        return NULL;
+    }
+    hex_value += 2;
+    char* byte_string = malloc(2);
+    char* byte_value = malloc(strlen(hex_value) % 2 == 0 ? strlen(hex_value) / 2 : (strlen(hex_value) + 1) / 2);
+    int j = 0;
+    for (int i = 0; i < strlen(hex_value); i += 2) {
+        if (i + 1 < strlen(hex_value)) {
+            byte_string[0] = hex_value[i];
+            byte_string[1] = hex_value[i + 1];
+        } else {
+            byte_string[0] = hex_value[i];
+            byte_string[1] = '0';
+        }
+        char byte = strtol(byte_string, NULL, 16);
+        byte_value[j++] = byte;
+    }
+    *size = j;
+    return byte_value;
+}
+
 void get_program_mode(int argc, char *argv[], program_mode *program_mode_value) {
     int argument_offset = 1;
     if (is_mode_argument(argv[argument_offset]) == false) {
@@ -70,7 +94,7 @@ void get_program_mode(int argc, char *argv[], program_mode *program_mode_value) 
     }
     if (program_mode_value->mode == WRITE) {
         if (argc > argument_offset + 1) {
-            program_mode_value->value = strtol(argv[argument_offset +  1], NULL, 0);
+            program_mode_value->value = map_hex_value_to_bytes(argv[argument_offset +  1], &program_mode_value->value_size);
         }
         if (argc > argument_offset + 2) {
             program_mode_value->offset = strtol(argv[argument_offset +  2], NULL, 0);
