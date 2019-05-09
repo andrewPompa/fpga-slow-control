@@ -11,13 +11,16 @@ void print_help(char* program_name) {
            "--------------- MODES ---------------\n"
            "-r [OFFSET] [SIZE] read memory block, if none of additional options will be provided, all BRAM block will be printed\n"
            "\tOFFSET (num of bytes from starting address), starting position to read the data\n"
-           "\tSIZE (num of bytes from starting address), how big block to read should be\n"
+           "\tSIZE (num of bytes), how big block to read should be\n\n"
            "-w VALUE [OFFSET] write to memory\n"
-           "\tVALUE value to put in memory, max value: 0xFFFFFFFF (4 bytes)\n"
-           "\tOFFSET address relative to BRAM staring position, where value will be set. Smallest block is byte.\n"
-           "-c clears BRAM\n",
+           "\tVALUE in hex to put in memory\n"
+           "\tOFFSET address relative to BRAM staring position, where value will be set. Smallest block is byte.\n\n"
+           "-c clears BRAM\n\n"
+           "Examples of use:\n"
+           "-receive data, no offset, 24 bytes block data: ./bram -r 0 24\n"
+           "-writes bytes into memory: ./bram -w 0x50 1020\n"
+           "-clear BRAM and read config from different file: ./bram bram-test.conf -c\n",
            program_name);
-//    "\twhen SIZE is set, only that memory block will be changed. If SIZE is bigger than VALUE, error will be thrown\n"
 }
 
 //---> read

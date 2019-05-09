@@ -39,6 +39,9 @@ char *validate_arguments(int argc, char *argv[]) {
             is_mode_selected = true;
         }
     }
+    if (is_mode_selected == false) {
+        return "mode not set!";
+    }
     return NULL;
 }
 

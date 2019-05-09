@@ -1,4 +1,3 @@
-# Moje zabawy z petalinuxem
 ## BRAM i GPIO
 ### Hardware
 ![alt text](./docs/bram-with-gpio.jpg "BRAM controller z GPIO")
