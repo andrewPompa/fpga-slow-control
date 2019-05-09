@@ -56,22 +56,24 @@ int main(int argc, char *argv[]) {
 //        write_to_bram(bram_address_offset, bram_highest_address, 0x0, 0);
     }
 }
-//0xFF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
 void read_from_bram(long start_address, long max_address, long offset_bytes, long word_size) {
     int fd = open("/dev/mem", O_RDWR | O_SYNC);
     if (fd == -1) {
         printf("ERROR: cannot open BRAM block...\n");
         exit(EXIT_FAILURE);
     }
-//    int bram_size = max_address - start_address;
-//    printf("num of bits in block: %d\n", bram_size);
-//    char * bram = (char *) mmap(NULL, bram_size, PROT_READ, MAP_SHARED, fd, start_address + offset);
-//    char *word_bytes = malloc(word_size);
-//    for (int i = 0; i < word_size; ++i) {
-//        printf("[%d] = 0x%X\n", i, bram[i]);
-//        word_bytes[i] = bram[i];
-//    }
-//    print_bytes_as_hex(word_bytes, word_size);
+    int bram_size = max_address - start_address;
+    printf("num of bits in block: %d\n", bram_size);
+    char * bram = (char *) mmap(NULL, bram_size, PROT_READ, MAP_SHARED, fd, start_address);
+
+    bram += offset_bytes;
+
+    char *word_bytes = malloc(word_size);
+    for (int i = 0; i < word_size; ++i) {
+        printf("[%d] = 0x%X\n", i, bram[i]);
+        word_bytes[i] = bram[i];
+    }
+    print_bytes_as_hex(word_bytes, word_size);
     close(fd);
 }
 
@@ -85,7 +87,8 @@ void write_to_bram(long start_address, long max_address, char *bytes, long bytes
 
     signed int bram_size = max_address - start_address;
     printf("num of bytes in block: %d, bytes size: %ld\n", (bram_size >> 3), bytes_size);
-    bram = (char *) mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, start_address + offset);
+    bram = (char *) mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, start_address );
+    bram += offset;
     if (bram == MAP_FAILED) {
         printf("ERROR: cannot open BRAM block...\n");
         exit(EXIT_FAILURE);
