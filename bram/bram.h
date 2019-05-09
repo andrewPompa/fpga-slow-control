@@ -22,5 +22,5 @@ void print_help(char* program_name) {
 
 //---> read
 void read_from_bram(long start_address, long max_address, long offset_bytes, long word_size);
-void write_to_bram(long start_address, long max_address, char *bytes, long offset);
+void write_to_bram(long start_address, long max_address, char *bytes, long bytes_size, long offset);
 //---> write
