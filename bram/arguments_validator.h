@@ -15,8 +15,8 @@ enum MODE {
 
 typedef struct {
     enum MODE mode;
-    long offset;
-    long size;
+    unsigned long offset;
+    unsigned long size;
     char * value;
     int value_size;
 } program_mode;

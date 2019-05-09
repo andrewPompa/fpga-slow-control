@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     FILE *file;
     file = fopen(conf_file_location, "r");
     if (file == NULL) {
-        printf("Cannot open conf file!\n");
+        printf("ERROR: cannot open conf file!\n");
         exit(EXIT_FAILURE);
     }
     long bram_address_offset = get_address_offset(file);
@@ -39,7 +39,12 @@ int main(int argc, char *argv[]) {
     long bram_highest_address = get_highest_address(file);
 
     if (program_mode_value.mode == NOT_FOUND) {
-        printf("Program mode not specified properly!\n");
+        printf("ERROR: program mode not specified properly!\n");
+        print_help(argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    if (bram_highest_address - bram_address_offset <= 0) {
+        printf("ERROR: highest offset is smaller than address offset!\n");
         print_help(argv[0]);
         exit(EXIT_FAILURE);
     }
@@ -58,15 +63,25 @@ void read_from_bram(long start_address, long max_address, long offset_bytes, lon
         printf("ERROR: cannot open BRAM block...\n");
         exit(EXIT_FAILURE);
     }
-    int bram_size = max_address - start_address;
+    int bram_size = max_address - start_address + 1;
     printf("num of bits in block: %d\n", bram_size);
     char * bram = (char *) mmap(NULL, bram_size, PROT_READ, MAP_SHARED, fd, start_address);
-
+    if (bram == MAP_FAILED) {
+        printf("ERROR: cannot open BRAM block...\n");
+        exit(EXIT_FAILURE);
+    }
+    if (start_address + (offset_bytes << 3) + (word_size << 3) > max_address) {
+        printf("ERROR: offset with word size exceeds address space\n");
+        exit(EXIT_FAILURE);
+    }
+    if (word_size == 0) {
+        word_size = (bram_size >> 3) + offset_bytes;
+    }
     bram += offset_bytes;
 
     char *word_bytes = malloc(word_size);
     for (int i = 0; i < word_size; ++i) {
-        printf("[0x%lX] = 0x%X\n", start_address + offset_bytes * 8 + i * 8, bram[0]);
+        printf("[0x%lX] = 0x%X\n", start_address + (offset_bytes << 3) + (i << 3), bram[0]);
         word_bytes[i] = bram[0];
         bram++;
     }
@@ -82,8 +97,11 @@ void write_to_bram(long start_address, long max_address, char *bytes, long bytes
         printf("ERROR: cannot open BRAM block...\n");
         exit(EXIT_FAILURE);
     }
-
-    signed int bram_size = max_address - start_address;
+    if (start_address + (bytes_size << 3) + (offset << 3) > max_address + 1) {
+        printf("ERROR: offset with value size exceeds address space\n");
+        exit(EXIT_FAILURE);
+    }
+    signed int bram_size = max_address - start_address + 1;
     printf("num of bytes in block: %d, bytes size: %ld\n", (bram_size >> 3), bytes_size);
     bram = (char *) mmap(NULL, bram_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, start_address );
     bram += offset;
@@ -92,10 +110,10 @@ void write_to_bram(long start_address, long max_address, char *bytes, long bytes
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < bytes_size; ++i) {
-        printf("%X\n", bytes[i]);
         bram[i] = bytes[i];
     }
     close(fd);
+    printf("value written into memory\n");
 }
 
 void clear_bram(long start_address, long max_address) {
@@ -111,5 +129,5 @@ void clear_bram(long start_address, long max_address) {
     for (int i = 0; i < bram_size >> 3; ++i) {
         bram[i] = 0;
     }
-
+    printf("memory cleared\n");
 }
