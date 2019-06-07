@@ -27,7 +27,9 @@ size_t get_encoded_length(long bytes) {
 }
 
 size_t get_decoded_length(long encoded_bytes) {
-    return (3 * encoded_bytes) / 4;
+    size_t result = (3 * encoded_bytes) / 4;
+    result = result - (result % 4);
+    return result;
 }
 
 int base64_encode(const void *data_buf, size_t data_length, char *result, size_t result_size) {

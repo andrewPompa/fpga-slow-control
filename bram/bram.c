@@ -70,22 +70,30 @@ void write_to_bram(long start_address, char *bytes, long words) {
     size_t pagesize = sysconf(_SC_PAGE_SIZE);
     off_t page_base = (start_address / pagesize) * pagesize;
     off_t page_offset = start_address - page_base;
-    unsigned char *bram = mmap(NULL, page_offset + bram_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, page_base);
+    printf("0x%lX, %ld\n", page_base, page_offset + bram_size);
+    uint *bram = mmap(NULL, page_offset + bram_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, page_base);
     if (bram == MAP_FAILED) {
         printf("ERROR during opening mmap\n");
         exit(EXIT_FAILURE);
     }
-    size_t decoded_length = get_decoded_length(strlen(bytes));
+    unsigned long decoded_length = get_decoded_length(strlen(bytes));
+    if (decoded_length % 4 != 0) {
+        printf("ERROR incorrect bytes length: %ld\n", decoded_length);
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decoded = malloc(decoded_length);
     int result = base64_decode(bytes, strlen(bytes), decoded, bram_size);
     if (result != 0) {
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < bram_size; ++i) {
-        bram[page_offset + i] = decoded[i];
+    for (int i = 0; i < decoded_length / 4; ++i) {
+        uint a = decoded[i * 4 + 3] << 24;
+        uint b = decoded[i * 4 + 2] << 16;
+        uint c = decoded[i * 4 + 1] << 8;
+        uint d = decoded[i * 4];
+        bram[i] = a + b + c + d;
     }
     close(fd);
     munmap(bram, bram_size);
     free(decoded);
-//    free(bytes);
 }
