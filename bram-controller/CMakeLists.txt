@@ -1,2 +1,8 @@
-project (bram_controller)
-add_executable(bram_controller bram_controller.cpp commands/read/read_command.hpp commands/read/read_command_verbose.hpp commands/read/read_command_application.hpp commands/write/write_command.hpp commands/write/write_command_verbose.hpp commands/write/write_command_application.hpp commands/command_factory.hpp commands/read/read_command_factory.hpp commands/write/write_command_factory.hpp commands/program_command.hpp)
+cmake_minimum_required(VERSION 3.3.2)
+project(bram_controller_project)
+
+enable_testing()
+
+add_subdirectory(library)
+add_subdirectory(main)
+add_subdirectory(test)

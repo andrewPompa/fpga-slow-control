@@ -12,33 +12,21 @@
 
 class CommandFactory {
 public:
-    CommandFactory(int argc, char **argv) {
+    CommandFactory(int argc, char *argv[]) {
         this->argc = argc;
         this->argv = argv;
     }
 
-    ProgramCommand * create() {
-        if (isRead()) {
-            return readCommandFactory.create(argc, argv);
-        }
-        if (isWrite()) {
-            return writeCommandFactory.create(argc, argv);
-        }
-        return nullptr;
-    }
+    ProgramCommand * create();
 private:
     int argc;
     char **argv;
     ReadCommandFactory readCommandFactory;
     WriteCommandFactory writeCommandFactory;
 
-    bool isWrite() {
-        return false;
-    }
+    bool isWriteCommand();
 
-    bool isRead() {
-        return false;
-    }
+    bool isReadCommand();
 };
 
 
