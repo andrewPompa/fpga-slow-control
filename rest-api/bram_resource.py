@@ -7,6 +7,8 @@ from subprocess import check_call, check_output, Popen, PIPE
 
 
 class BramResource(object):
+    byte_cache = b64encode(b'\x00\x01\xFF\x11')
+
     def validate_request_headers(req, resp, resource, params):
         if req.content_type != "application/octet-stream":
             msg = 'Request payload has to be binary data!'
@@ -35,13 +37,14 @@ class BramResource(object):
     def on_patch(self, req, resp, address):
         words, address_str = self.validate_and_get_parameters(req.query_string, address)
         data = self.get_encoded_data_to_write(req.stream, req.content_length)
-        response = check_call(["./bram-rest", "-w", address_str, words, data])
+        self.byte_cache = data
+        print self.byte_cache
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp, address):
         words, address_str = self.validate_and_get_parameters(req.query_string, address)
-        bram_bytes = check_output(["./bram-rest", "-r", address_str, words], stdin=PIPE)
         resp.content_type = "application/octet-stream"
-        resp.data = bram_bytes
-        # resp.data = b64decode(bram_bytes)
+        data = b64decode(self.byte_cache)
+        print data
+        resp.data = data
         resp.status = falcon.HTTP_200
