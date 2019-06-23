@@ -9,10 +9,12 @@
 #include <cstdio>
 #include "read_command.hpp"
 
-class ReadCommnadVerbose : public ReadCommand {
+class ReadVerboseCommand : public ReadCommand {
 public:
+    ReadVerboseCommand(uint address, uint numOfWordsToRead): ReadCommand(address, numOfWordsToRead) {}
+private:
     int read() override {
-        printf("Read Command from verbose\n");
+        printf("Read Command from verbose: address: %u, value: %u\n", address, numOfWordsToRead);
         return 0;
     }
 };

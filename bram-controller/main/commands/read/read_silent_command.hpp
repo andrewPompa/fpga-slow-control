@@ -8,9 +8,13 @@
 #include <cstdio>
 #include "read_command.hpp"
 
-class ReadCommandApplication : public ReadCommand {
+class ReadSilentCommand : public ReadCommand {
+public:
+    ReadSilentCommand(uint address, uint numOfWordsToRead): ReadCommand(address, numOfWordsToRead) {}
+private:
     int read() override {
         printf("Read Command from application\n");
+
         return 0;
     }
 };

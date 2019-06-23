@@ -10,14 +10,15 @@
 
 class ReadCommand: public ProgramCommand {
 public:
+    explicit ReadCommand(uint address, uint numOfWordsToRead): address(address), numOfWordsToRead(numOfWordsToRead) {}
+
     int execute() override {
         return read();
     }
 
 protected:
     unsigned int address{};
-    unsigned int offset{};
-    unsigned int num_of_words_to_read{};
+    unsigned int numOfWordsToRead{};
     unsigned int *read_words{};
     virtual int read() = 0;
 };

@@ -7,15 +7,9 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    vector<string> args(argv, argv + argc);
-    printf("pyy: %d\n", args.size());
-    for (string i : args) {
-        cout << i << endl;
-        printf("test: %s\n", i.c_str());
-    }
-    CommandFactory commandFactory(argc, argv);
-    ProgramCommand *command = commandFactory.create();
-    if (command != nullptr) {
-        command->execute();
-    }
+    vector<string>* args = new vector<string>(argv, argv + argc);
+    vector<string> v;
+    CommandFactory commandFactory(args);
+    ProgramCommand *programCommand = commandFactory.create();
+    programCommand->execute();
 }

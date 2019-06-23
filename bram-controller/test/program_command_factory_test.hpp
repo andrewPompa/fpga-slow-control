@@ -2,7 +2,7 @@
 #define BRAM_CONTROLLER_PROJECT_PROGRAM_COMMAND_FACTORY_TEST_HPP
 
 
-#include <commands/command_factory.hpp>
+#include "../main/commands/command_factory.hpp"
 
 class ProgramCommandFactoryTest : public ::testing::Test {
 protected:
