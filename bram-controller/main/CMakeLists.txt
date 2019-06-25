@@ -18,9 +18,11 @@ file(GLOB bram_controller_SRC
         "commands/help/help_verbose_command.hpp"
         "commands/help/help_silent_command.hpp"
         "commands/clear/clear_command.hpp"
+        "base64/base_64.cpp"
+        "base64/base_64.hpp"
         )
 
-add_executable(bram_controller bram_controller.cpp ${bram_controller_SRC} commands/clear/clear_command_factory.hpp)
+add_executable(bram_controller bram_controller.cpp ${bram_controller_SRC} commands/clear/clear_command_factory.hpp exceptions/memory_exception.hpp )
 
 add_library(bram_controller_lib
         ${bram_controller_SRC} )
