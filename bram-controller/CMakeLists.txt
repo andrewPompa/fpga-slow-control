@@ -3,12 +3,16 @@ project(bram_controller_project)
 
 set (CMAKE_CXX_STANDARD 11)
 
-option(BUILD_BAR_SUBPROJECT "Build targets from subproject Bar" ON)
+option(BUILD_TEST "Build tests" ON)
 
 enable_testing()
 
 add_subdirectory(main)
 
-if(BUILD_BAR_SUBPROJECT)
+set(MEMORY_FILE_LOCATION "/dev/mem")
+
+if(BUILD_TEST)
+    set(MEMORY_FILE_LOCATION "test/test_memory_file")
     add_subdirectory(test)
 endif()
+configure_file(program_settings.h.in program_settings.h @ONLY)

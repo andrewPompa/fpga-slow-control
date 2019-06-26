@@ -20,11 +20,14 @@ file(GLOB bram_controller_SRC
         "commands/clear/clear_command.hpp"
         "base64/base_64.cpp"
         "base64/base_64.hpp"
+        "commands/clear/clear_command_factory.hpp"
+        "exceptions/memory_exception.hpp"
+        "../program_settings.h"
         )
 
-add_executable(bram_controller bram_controller.cpp ${bram_controller_SRC} commands/clear/clear_command_factory.hpp exceptions/memory_exception.hpp )
+add_executable(bram_controller bram_controller.cpp ${bram_controller_SRC})
 
 add_library(bram_controller_lib
-        ${bram_controller_SRC} )
+        ${bram_controller_SRC})
 
 target_include_directories(bram_controller_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

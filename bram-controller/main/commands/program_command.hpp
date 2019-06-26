@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include "../exceptions/memory_exception.hpp"
+#include "../../program_settings.h"
 
 class ProgramCommand {
 public:
@@ -20,7 +21,7 @@ protected:
         if (address % 4 != 0) {
             throw MemoryException("address has to be divisible by 32 (word size)");
         }
-        int fd = open("/dev/mem", O_RDWR | O_SYNC);
+        int fd = open(MEMORY_FILE_LOCATION, O_RDWR | O_SYNC);
         if (fd < 0) {
             throw MemoryException("cannot open memory block");
         }
