@@ -8,12 +8,12 @@
 #include "../program_command.hpp"
 
 class WriteCommand : public ProgramCommand {
-private:
+protected:
     const uint address;
-    const uint words;
-    const uint *bytes;
+    const uint numOfWordsToWrite;
+    const uint *words;
 public:
-    explicit WriteCommand(uint address, uint words, const uint *bytes) : address(address), words(words), bytes(bytes) {}
+    explicit WriteCommand(uint address, uint numOfWordsToWrite, const uint *words) : address(address), numOfWordsToWrite(numOfWordsToWrite), words(words) {}
 
     int execute() override {
         return write();
