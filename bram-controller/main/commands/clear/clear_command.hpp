@@ -8,15 +8,11 @@
 
 
 class ClearCommand : public ProgramCommand {
-private:
+protected:
     uint address;
     uint numOfWordsToClear;
 public:
     ClearCommand(uint address, uint numOfWordsToClear): address(address), numOfWordsToClear(numOfWordsToClear) {}
-
-    int execute() override {
-        return 0;
-    }
 };
 
 
