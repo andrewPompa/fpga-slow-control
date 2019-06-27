@@ -13,8 +13,6 @@ file(GLOB bram_controller_SRC
         "commands/write/write_silent_command.hpp"
         "commands/write/write_verbose_command.hpp"
         "commands/error_code.hpp"
-        "commands/verbose/verbose_argument_reader.cpp"
-        "commands/verbose/verbose_argument_reader.hpp"
         "commands/help/help_verbose_command.hpp"
         "commands/help/help_silent_command.hpp"
         "commands/clear/clear_command.hpp"
