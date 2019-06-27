@@ -10,7 +10,17 @@
 
 class WriteSilentCommand : public WriteCommand {
 public:
-    explicit WriteSilentCommand(uint address, uint numOfWordsToWrite, const uint *words) : WriteCommand(address, numOfWordsToWrite, words) {}
+    explicit WriteSilentCommand(uint address, uint numOfWordsToWrite, const uint *words) : WriteCommand(address, numOfWordsToWrite, words) {
+        uint * copyWords = new uint[numOfWordsToWrite];
+        for (int i = 0; i < numOfWordsToWrite; ++i) {
+            copyWords[i] = words[i];
+        }
+        this->words = copyWords;
+    }
+
+    ~WriteSilentCommand() {
+        delete[] words;
+    }
 
 private:
     int write() override {
