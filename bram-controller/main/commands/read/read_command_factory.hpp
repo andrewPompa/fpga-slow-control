@@ -26,10 +26,16 @@ public:
         if (isSilent) {
             address = std::stol(addressString);
             numOfWordsToRead = std::stol(numOfWordsToReadString);
+            if (numOfWordsToRead < 1) {
+                return nullptr;
+            }
             command = static_cast<ReadCommand*> (new ReadSilentCommand(address, numOfWordsToRead));
         } else {
             address = std::stol(addressString, nullptr, 16);
             numOfWordsToRead = std::stol(numOfWordsToReadString, nullptr, 16);
+            if (numOfWordsToRead < 1) {
+                return nullptr;
+            }
             command = static_cast<ReadCommand*> (new ReadVerboseCommand(address, numOfWordsToRead));
         }
         return command;
