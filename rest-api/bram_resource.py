@@ -33,15 +33,17 @@ class BramResource(object):
 
     @falcon.before(validate_request_headers)
     def on_patch(self, req, resp, address):
-        words, address_str = self.validate_and_get_parameters(req.query_string, address)
-        data = self.get_encoded_data_to_write(req.stream, req.content_length)
-        response = check_call(["./bram-rest", "-w", address_str, words, data])
+        num_of_words, address_str = self.validate_and_get_parameters(req.query_string, address)
+        words = self.get_encoded_data_to_write(req.stream, req.content_length)
+        print words
+        response = check_call(["./bram_controller", "-s", "-w", address_str, num_of_words, words])
+        print "response is = " + str(response)
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp, address):
-        words, address_str = self.validate_and_get_parameters(req.query_string, address)
-        bram_bytes = check_output(["./bram-rest", "-r", address_str, words], stdin=PIPE)
+        num_of_words, address_str = self.validate_and_get_parameters(req.query_string, address)
+        bram_bytes = check_output(["./bram_controller", "-s", "-r", address_str, num_of_words], stdin=PIPE)
         resp.content_type = "application/octet-stream"
-        resp.data = bram_bytes
-        # resp.data = b64decode(bram_bytes)
+        print "bram_bytes = " + bram_bytes
+        resp.data = b64decode(bram_bytes)
         resp.status = falcon.HTTP_200
