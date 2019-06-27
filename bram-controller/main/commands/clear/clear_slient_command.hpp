@@ -20,6 +20,7 @@ public:
         for (int i = 0; i < numOfWordsToClear; ++i) {
             memory[i] = 0;
         }
+        closeMemory(memory);
         return 0;
     }
 };

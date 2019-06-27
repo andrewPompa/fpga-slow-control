@@ -16,25 +16,28 @@ public:
     ReadVerboseCommand(uint address, uint numOfWordsToRead): ReadCommand(address, numOfWordsToRead) {}
 private:
     int read() override {
-        printf("reading %u words from address: %u\n", address, numOfWordsToRead);
+        printf("reading %u words from address: 0x%X\n", numOfWordsToRead, address);
         uint *memory;
         try {
             memory = openMemory(address, numOfWordsToRead);
         } catch (const MemoryException &e) {
-            printf("cannot open memory block for address: %u, cause: %s\n", address, e.what());
+            printf("cannot open memory block for address: 0x%X, cause: %s\n", address, e.what());
             return 1;
         }
-
+        char *hexWord;
         for (int i = 0; i < numOfWordsToRead; ++i) {
-            printf("value for address: 0x%X is 0x%X\n", address + numOfWordsToRead * 4, memory[i]);
+            hexWord = uintToHex(memory[i]);
+            printf("value for address: 0x%X is 0x%s\n", address + i * 4, hexWord);
+            delete[] hexWord;
         }
+        closeMemory(memory);
         return 0;
     }
     char* uintToHex(uint word) {
         char *values = new char[8];
-        for (int i = 7; i > 0; --i) {
+        for (int i = 7; i >= 0; --i) {
             char value = (word >> (i * 4)) & 0xF;
-            values[i - 7] = HEX_VALUES[value];
+            values[7 - i] = HEX_VALUES[value];
         }
         return values;
     }

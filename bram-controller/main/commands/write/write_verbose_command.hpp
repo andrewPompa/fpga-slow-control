@@ -24,6 +24,7 @@ private:
             memory[i] = words[i];
         }
         printf("wrote properly %u words for address: %u\n", numOfWordsToWrite, address);
+        closeMemory(memory);
         return 0;
     }
 };

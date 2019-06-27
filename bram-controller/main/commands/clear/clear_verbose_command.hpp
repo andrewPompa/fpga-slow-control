@@ -21,7 +21,8 @@ public:
         for (int i = 0; i < numOfWordsToClear; ++i) {
             memory[i] = 0;
         }
-        printf("cleared %u words, starting from address: %u\n", address, numOfWordsToClear);
+        printf("cleared %u words, starting from address: 0x%X\n", numOfWordsToClear, address);
+        closeMemory(memory);
         return 0;
     }
 };

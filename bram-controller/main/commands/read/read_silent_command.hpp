@@ -25,6 +25,7 @@ private:
         Base64 base64;
         std::string value = base64.encode(memory, numOfWordsToRead);
         std::cout << value;
+        closeMemory(reinterpret_cast<uint *>(memory));
         return 0;
     }
 };

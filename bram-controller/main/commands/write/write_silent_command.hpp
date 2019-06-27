@@ -23,6 +23,7 @@ private:
         for (int i = 0; i < numOfWordsToWrite; ++i) {
             memory[i] = words[i];
         }
+        closeMemory(memory);
         return 0;
     }
 };

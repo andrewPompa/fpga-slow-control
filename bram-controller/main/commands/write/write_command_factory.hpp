@@ -41,24 +41,28 @@ public:
         } else {
             address = std::stol(addressString, nullptr, 16);
             numOfWordsToWrite = std::stol(numOfWordsToWriteString, nullptr, 16);
-            if (valueToWriteString.size() % 8 != 0 || valueToWriteString.size() / 8 != numOfWordsToWrite) {
+
+            uint* wordsToWrite = getValueToWriteFromHexString(valueToWriteString, numOfWordsToWrite);
+            if (wordsToWrite == nullptr) {
                 printf("sent words to write do not have 32 bits length, or value is not equal to specified num of words\n");
                 return nullptr;
             }
-            uint* wordsToWrite = getValueToWriteFromHexString(valueToWriteString, numOfWordsToWrite);
             command = static_cast<WriteCommand*> (new WriteVerboseCommand(address, numOfWordsToWrite, wordsToWrite));
         }
         return command;
     }
 
 private:
-    uint* getValueToWriteFromHexString(std::string &basicString, uint numOfWordsToRead) {
+    uint* getValueToWriteFromHexString(std::string &basicString, uint numOfWordsToWrite) {
         if (std::regex_match(basicString, hexRegexWithZeroPrefix)) {
             basicString = basicString.erase(0, 2);
         }
-        uint *valueToWrite = new uint[numOfWordsToRead];
-        for (int i = 0; i < numOfWordsToRead; ++i) {
-            valueToWrite[i] = std::stol(basicString.substr(i * 8, 8), nullptr, 16);
+        if (valueToWriteString.size() % 8 != 0 || valueToWriteString.size() / 8 != numOfWordsToWrite) {
+            return nullptr;
+        }
+        uint *valueToWrite = new uint[numOfWordsToWrite];
+        for (int i = 0; i < numOfWordsToWrite; ++i) {
+            valueToWrite[i] = std::stoll(basicString.substr(i * 8, 8), nullptr, 16);
         }
         return valueToWrite;
     }
