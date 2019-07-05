@@ -35,6 +35,7 @@ class BramResource(object):
 
     @falcon.before(validate_request_headers)
     def on_patch(self, req, resp, address):
+        print "PATCH REQUEST"
         words, address_str = self.validate_and_get_parameters(req.query_string, address)
         data = self.get_encoded_data_to_write(req.stream, req.content_length)
         self.byte_cache = data
@@ -42,6 +43,7 @@ class BramResource(object):
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp, address):
+        print "GET REQUEST"
         words, address_str = self.validate_and_get_parameters(req.query_string, address)
         resp.content_type = "application/octet-stream"
         data = b64decode(self.byte_cache)
