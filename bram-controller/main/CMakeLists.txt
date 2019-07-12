@@ -20,6 +20,7 @@ file(GLOB bram_controller_SRC
         "base64/base_64.hpp"
         "commands/clear/clear_command_factory.hpp"
         "exceptions/memory_exception.hpp"
+        "utils/hex_argument_reader.hpp"
         "../program_settings.h"
         )
 

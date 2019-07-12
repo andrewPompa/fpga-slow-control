@@ -23,18 +23,32 @@ CommandFactory::CommandFactory(std::vector<std::string> *args) {
 }
 
 ProgramCommand *CommandFactory::create() {
+    bool isSilent = hasArgument("-s") || hasArgument("--silent");
+    try {
+        return validateArgumentsAndCreate(isSilent);
+    } catch (std::invalid_argument & e) {
+        if (!isSilent) {
+            printf("cannot create command reason: %s\n", e.what());
+        }
+        return nullptr;
+    }
+}
+
+ProgramCommand *CommandFactory::validateArgumentsAndCreate(bool isSilent) {
     bool isHelp = hasArgument("-h") || hasArgument("--help");
     if (isHelp) {
         return static_cast<ProgramCommand *> (new HelpVerboseCommand());
     }
 
-    bool isSilent = hasArgument("-s") || hasArgument("--silent");
     bool isRead = hasArgument("-r") || hasArgument("--read");
     bool isWrite = hasArgument("-w") || hasArgument("--write");
     bool isClear = hasArgument("-c") || hasArgument("--clear");
     if (isRead + isWrite + isClear > 1) {
         throw std::invalid_argument("too many operations selected in arguments");
+    } else if (isRead + isWrite + isClear == 0) {
+        throw std::invalid_argument("no operations selected");
     }
+
     ProgramCommand *programCommand = nullptr;
     if (isRead) {
         programCommand = createReadCommand(isSilent);
@@ -63,7 +77,7 @@ WriteCommand *CommandFactory::createWriteCommand(bool isSilent) {
     if (index == -1) {
         index = findOptionIndex("--write");
     }
-    if (this->args->size() < 3) {
+    if (this->args->size() < 4) {
         throw std::invalid_argument("Not enough options for write command");
     }
     WriteCommandFactory writeCommandFactory(isSilent, this->args->at(index + 1), this->args->at(index + 2), this->args->at(index + 3));
@@ -99,4 +113,3 @@ int CommandFactory::findOptionIndex(const std::string &value) {
     }
     return -1;
 }
-
