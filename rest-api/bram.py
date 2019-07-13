@@ -1,24 +1,18 @@
 import falcon
-from falcon.http_status import HTTPStatus
-
+import ConfigParser
+from cors_interceptor import CORSInterceptor
 from bram_resource import BramResource
+from configuration_resource import ConfigurationResource
 
-page_path = 'path-to-page'
-
-
-class HandleCORS(object):
-
-    def process_request(self, req, resp):
-        resp.set_header('Access-Control-Allow-Origin', '*')
-        resp.set_header('Access-Control-Allow-Methods', 'GET,HEAD,POST,PATCH,OPTIONS')
-        resp.set_header('Access-Control-Allow-Headers', 'content-type')
-        resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
-        if req.method == 'OPTIONS':
-            raise HTTPStatus(falcon.HTTP_200, body='\n')
-
-
-api = application = falcon.API(middleware=[HandleCORS()])
+config = ConfigParser.ConfigParser()
+config.read('server.cfg')
+config_file_path = config.get('CONFIGURATION', 'file_path')
+page_path = config.get('CONFIGURATION', 'page_path')
 
 bram = BramResource()
+configuration = ConfigurationResource(config_file_path)
+
+api = application = falcon.API(middleware=[CORSInterceptor()])
 api.add_route('/address/{address}', bram)
+api.add_route('/configuration', configuration)
 api.add_static_route('/', page_path, False, 'index.html')
