@@ -10,16 +10,7 @@
 
 class WriteSilentCommand : public WriteCommand {
 public:
-    explicit WriteSilentCommand(uint address, uint numOfWordsToWrite, const uint *words) : WriteCommand(address, numOfWordsToWrite, words) {
-        uint * copyWords = new uint[numOfWordsToWrite];
-        for (int i = 0; i < numOfWordsToWrite; ++i) {
-            copyWords[i] = words[i];
-        }
-        this->words = copyWords;
-    }
-
-    ~WriteSilentCommand() {
-        delete[] words;
+    explicit WriteSilentCommand(uint address, uint numOfWordsToWrite, std::shared_ptr<uint>& words) : WriteCommand(address, numOfWordsToWrite, words) {
     }
 
 private:
@@ -31,7 +22,7 @@ private:
             return 1;
         }
         for (int i = 0; i < numOfWordsToWrite; ++i) {
-            memory[i] = words[i];
+            memory[i] = words.get()[i];
         }
         closeMemory(memory);
         return 0;

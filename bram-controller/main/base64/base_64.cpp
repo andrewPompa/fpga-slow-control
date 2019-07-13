@@ -2,6 +2,7 @@
 // Created by andrzej on 25.06.19.
 //
 
+#include <memory>
 #include "base_64.hpp"
 //#include <iostream>
 
@@ -55,14 +56,14 @@ std::string Base64::encode(u_char *buffer, uint bufferLength) {
     return ret;
 }
 
-std::vector<u_char> Base64::decode(std::string const &encoded) {
+std::shared_ptr<uint> Base64::decodeWords(std::string const &encoded) {
     int inputLen = encoded.size();
     int i = 0;
     int j = 0;
     int in_ = 0;
     u_char chars3[3];
     u_char chars4[4];
-    std::vector<u_char> bytes;
+    std::vector<u_char> decodedChars;
 
     while (inputLen-- && (encoded[in_] != '=') && isBase64(encoded[in_])) {
         chars4[i++] = encoded[in_];
@@ -77,7 +78,7 @@ std::vector<u_char> Base64::decode(std::string const &encoded) {
             chars3[2] = ((chars4[2] & 0x3) << 6) + chars4[3];
 
             for (i = 0; (i < 3); i++) {
-                bytes.push_back(chars3[i]);
+                decodedChars.push_back(chars3[i]);
             }
             i = 0;
         }
@@ -95,9 +96,19 @@ std::vector<u_char> Base64::decode(std::string const &encoded) {
         chars3[2] = ((chars4[2] & 0x3) << 6) + chars4[3];
 
         for (j = 0; (j < i - 1); j++) {
-            bytes.push_back(chars3[j]);
+            decodedChars.push_back(chars3[j]);
         }
     }
-
+    std::shared_ptr<uint> bytes(new uint[(decodedChars.size() +  decodedChars.size() % 4) / 4]);
+    uint w = 0;
+    for (int k = 0; k < decodedChars.size(); ++k) {
+        w |= decodedChars[k];
+        if ((k + 1) % 4 == 0 || k == decodedChars.size() - 1) {
+            bytes.get()[k / 4] = w;
+            w = 0;
+        } else {
+            w <<= 8;
+        }
+    }
     return bytes;
 }

@@ -11,5 +11,7 @@ int main(int argc, char *argv[]) {
     vector<string> v;
     CommandFactory commandFactory(args);
     ProgramCommand *programCommand = commandFactory.create();
-    programCommand->execute();
+    if (programCommand != nullptr) {
+        programCommand->execute();
+    }
 }

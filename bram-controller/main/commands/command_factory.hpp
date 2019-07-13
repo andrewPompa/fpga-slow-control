@@ -19,6 +19,8 @@ public:
 private:
     std::vector <std::string> * args;
 
+    ProgramCommand * validateArgumentsAndCreate(bool isSilent);
+
     ReadCommand *createReadCommand(bool isSilent);
     WriteCommand *createWriteCommand(bool isSilent);
     ClearCommand *createClearCommand(bool isSilent);

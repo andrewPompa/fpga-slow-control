@@ -7,10 +7,11 @@
 
 
 #include "write_command.hpp"
+#include <memory>
 
 class WriteVerboseCommand : public WriteCommand {
 public:
-    explicit WriteVerboseCommand(uint address, uint numOfWordsToWrite, const uint *words) : WriteCommand(address, numOfWordsToWrite, words) {}
+    explicit WriteVerboseCommand(uint address, uint numOfWordsToWrite, std::shared_ptr<uint>& words) : WriteCommand(address, numOfWordsToWrite, words) {}
 private:
     int write() override {
         uint * memory;
@@ -21,7 +22,7 @@ private:
             return 1;
         }
         for (int i = 0; i < numOfWordsToWrite; ++i) {
-            memory[i] = words[i];
+            memory[i] = words.get()[i];
         }
         printf("wrote properly %u words for address: %u\n", numOfWordsToWrite, address);
         closeMemory(memory);
