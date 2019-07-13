@@ -3,7 +3,7 @@
 #include <commands/help/help_verbose_command.hpp>
 #include "program_command_factory_test.hpp"
 #include "../main/commands/command_factory.hpp"
-
+#include <climits>
 
 ProgramCommandFactoryTest::ProgramCommandFactoryTest() {}
 
@@ -78,22 +78,17 @@ TEST_F(ProgramCommandFactoryTest, readOptionWithoutArguments) {
 }
 
 TEST_F(ProgramCommandFactoryTest, isReadCommand) {
-    bool isExceptionThrown = false;
     std::vector<std::string> args;
-    args.emplace_back("program-name");
+    args.emplace_back("bram_controller");
     args.emplace_back("-r");
     auto * factory = new CommandFactory(&args);
-    try {
-        factory->create();
-    } catch (const std::invalid_argument &e) {
-        isExceptionThrown = true;
-    }
-    EXPECT_EQ(isExceptionThrown, true);
+    ProgramCommand* command = factory->create();
+    EXPECT_EQ(command, nullptr);
 }
 
 TEST_F(ProgramCommandFactoryTest, isHelpCommand) {
     std::vector<std::string> args;
-    args.emplace_back("program-name");
+    args.emplace_back("bram_controller");
     args.emplace_back("-r");
     args.emplace_back("-s");
     args.emplace_back("--help");
@@ -106,21 +101,20 @@ TEST_F(ProgramCommandFactoryTest, isHelpCommand) {
 
 TEST_F(ProgramCommandFactoryTest, ReadCommandParseVerboseArguments) {
     std::vector<std::string> args;
-    args.emplace_back("program-name");
+    args.emplace_back("bram_controller");
     args.emplace_back("-r");
     args.emplace_back("0xFFFFFFFFF");
     args.emplace_back("0xFFFFFFFF");
     auto * factory = new CommandFactory(&args);
     auto * command = factory->create();
-    command->execute();
+    EXPECT_NE(command, nullptr);
 }
 
 TEST_F(ProgramCommandFactoryTest, ReadCommandParseSilentArguments) {
     std::vector<std::string> args;
-    args.emplace_back("program-name");
+    args.emplace_back("bram_controller");
     args.emplace_back("--silent");
     args.emplace_back("--read");
-    long value = 0xFFFFFFFFFF;
     args.emplace_back("0xFFFFFFFFF");
     args.emplace_back("0xFFFFFFFF");
     auto * factory = new CommandFactory(&args);

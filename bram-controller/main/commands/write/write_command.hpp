@@ -6,14 +6,15 @@
 #define BRAM_CONTROLLER_WRITE_COMMAND_HPP
 
 #include "../program_command.hpp"
+#include <memory>
 
 class WriteCommand : public ProgramCommand {
 protected:
     const uint address;
     const uint numOfWordsToWrite;
-    const uint *words;
+    std::shared_ptr<uint>& words;
 public:
-    explicit WriteCommand(uint address, uint numOfWordsToWrite, const uint *words) : address(address), numOfWordsToWrite(numOfWordsToWrite), words(words) {}
+    explicit WriteCommand(uint address, uint numOfWordsToWrite, std::shared_ptr<uint>& words) : address(address), numOfWordsToWrite(numOfWordsToWrite), words(words) {}
 
     int execute() override {
         return write();

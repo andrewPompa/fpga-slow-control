@@ -11,6 +11,8 @@
 #include "write_command.hpp"
 #include "write_silent_command.hpp"
 #include "write_verbose_command.hpp"
+#include "../../utils/hex_argument_reader.hpp"
+#include <climits>
 
 const std::regex hexRegexWithZeroPrefix("0x[0-9A-F]+");
 
@@ -30,19 +32,22 @@ public:
         uint address = 0;
         uint numOfWordsToWrite = 0;
         if (isSilent) {
+            if (std::stol(addressString) > UINT_MAX) {
+                throw std::invalid_argument("address has to be 32 bit number");
+            }
+            if (std::stol(numOfWordsToWriteString) > UINT_MAX) {
+                throw std::invalid_argument("num of words has to be 32 bit number");
+            }
             address = std::stol(addressString);
             numOfWordsToWrite = std::stol(numOfWordsToWriteString);
-            std::vector<u_char> bytesToWrite = getValueFromBase64(valueToWriteString);
-            if (bytesToWrite.size() / 4 != numOfWordsToWrite) {
-                return nullptr;
-            }
-            uint *words = (uint *) &bytesToWrite[0];
-            command = static_cast<WriteCommand*> (new WriteSilentCommand(address, numOfWordsToWrite, words));
+            std::shared_ptr<uint> bytesToWrite = getValueFromBase64(valueToWriteString);
+            command = static_cast<WriteCommand*> (new WriteSilentCommand(address, numOfWordsToWrite, bytesToWrite));
         } else {
-            address = std::stol(addressString, nullptr, 16);
-            numOfWordsToWrite = std::stol(numOfWordsToWriteString, nullptr, 16);
+            HexArgumentReader hexArgumentReader;
+            address = hexArgumentReader.readWord(addressString);
+            numOfWordsToWrite = hexArgumentReader.readWord(numOfWordsToWriteString);
 
-            uint* wordsToWrite = getValueToWriteFromHexString(valueToWriteString, numOfWordsToWrite);
+            std::shared_ptr<uint> wordsToWrite = hexArgumentReader.readWords(valueToWriteString, numOfWordsToWrite);
             if (wordsToWrite == nullptr) {
                 printf("sent words to write do not have 32 bits length, or value is not equal to specified num of words\n");
                 return nullptr;
@@ -53,23 +58,9 @@ public:
     }
 
 private:
-    uint* getValueToWriteFromHexString(std::string &basicString, uint numOfWordsToWrite) {
-        if (std::regex_match(basicString, hexRegexWithZeroPrefix)) {
-            basicString = basicString.erase(0, 2);
-        }
-        if (valueToWriteString.size() % 8 != 0 || valueToWriteString.size() / 8 != numOfWordsToWrite) {
-            return nullptr;
-        }
-        uint *valueToWrite = new uint[numOfWordsToWrite];
-        for (int i = 0; i < numOfWordsToWrite; ++i) {
-            valueToWrite[i] = std::stoll(basicString.substr(i * 8, 8), nullptr, 16);
-        }
-        return valueToWrite;
-    }
-
-    std::vector<u_char> getValueFromBase64(const std::string &basicString) {
+    std::shared_ptr<uint> getValueFromBase64(const std::string &basicString) {
         Base64 base64;
-        return base64.decode(basicString);
+        return base64.decodeWords(basicString);
     }
 };
 
