@@ -7,11 +7,12 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 class Base64 {
 public:
     std::string encode(u_char *buffer, uint bufferLength);
-    std::vector<u_char> decode(std::string const &encoded);
+    std::shared_ptr<uint> decodeWords(std::string const &encoded);
 };
 
 
