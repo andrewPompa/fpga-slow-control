@@ -13,17 +13,6 @@ void ProgramCommandFactoryTest::SetUp() {
 
 }
 
-/*
- *
- * ./
-./bram_controller -w
-./bram_controller  --read -s
-./bram_controller -r
-./bram_controller -w 0x00A0000000
-./bram_controller -r 0x00A0000000
-./bram_controller -w 0x00A0000000 2 0x
- * */
-
 void ProgramCommandFactoryTest::TearDown() {}
 
 TEST_F(ProgramCommandFactoryTest, noOption) {
@@ -53,6 +42,18 @@ TEST_F(ProgramCommandFactoryTest, writeOptionWithoutArguments) {
     auto * factory = new CommandFactory(&args);
     ProgramCommand* command = factory->create();
     EXPECT_EQ(command, nullptr);
+}
+
+TEST_F(ProgramCommandFactoryTest, writeOptionValidArguments) {
+    std::vector<std::string> args;
+    args.emplace_back("bram_controller");
+    args.emplace_back("-w");
+    args.emplace_back("0xA0000000");
+    args.emplace_back("0x3");
+    args.emplace_back("0xFFAAFFAA00110011BB22BB22");
+    auto * factory = new CommandFactory(&args);
+    ProgramCommand* command = factory->create();
+    EXPECT_NE(command, nullptr);
 }
 
 TEST_F(ProgramCommandFactoryTest, writeOptionWithInvalidWordsArguments) {
@@ -115,9 +116,9 @@ TEST_F(ProgramCommandFactoryTest, ReadCommandParseSilentArguments) {
     args.emplace_back("bram_controller");
     args.emplace_back("--silent");
     args.emplace_back("--read");
-    args.emplace_back("0xFFFFFFFFF");
-    args.emplace_back("0xFFFFFFFF");
+    args.emplace_back("12345");
+    args.emplace_back("14");
     auto * factory = new CommandFactory(&args);
     auto * command = factory->create();
-    command->execute();
+    EXPECT_NE(command, nullptr);
 }

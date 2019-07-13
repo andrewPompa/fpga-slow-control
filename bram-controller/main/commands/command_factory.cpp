@@ -28,7 +28,7 @@ ProgramCommand *CommandFactory::create() {
         return validateArgumentsAndCreate(isSilent);
     } catch (std::invalid_argument & e) {
         if (!isSilent) {
-            printf("cannot create command reason: %s\n", e.what());
+            printf("cannot create command: %s\n", e.what());
         }
         return nullptr;
     }
