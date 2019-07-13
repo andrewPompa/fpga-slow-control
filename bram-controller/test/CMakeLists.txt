@@ -1,0 +1,7 @@
+find_package(Threads REQUIRED)
+find_package(GTest REQUIRED)
+include_directories("${GTEST_INCLUDE_DIRS}")
+ADD_EXECUTABLE(bram_controller_test main.cpp program_command_factory_test.cpp program_command_factory_test.hpp base_64_test.cpp base_64_test.hpp)
+target_link_libraries(bram_controller_test ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(bram_controller_test ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(bram_controller_test bram_controller_lib)
