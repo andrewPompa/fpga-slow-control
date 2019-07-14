@@ -65,7 +65,7 @@ std::shared_ptr<ProgramCommand> CommandFactory::createReadCommand(bool isSilent)
     if (index == -1) {
         index = findOptionIndex("--read");
     }
-    if (this->args.size() < 2) {
+    if (this->args.size() < 3) {
         throw std::invalid_argument("Not enough options for read command");
     }
     ReadCommandFactory readCommandFactory(isSilent, this->args.at(index + 1), this->args.at(index + 2));
@@ -80,7 +80,7 @@ std::shared_ptr<ProgramCommand> CommandFactory::createWriteCommand(bool isSilent
     if (this->args.size() < 4) {
         throw std::invalid_argument("Not enough options for write command");
     }
-    std::vector<std::string> writeWords(args.begin() + 3, args.end());
+    std::vector<std::string> writeWords(args.begin() + index + 3, args.end());
     WriteCommandFactory writeCommandFactory(isSilent, args.at(index + 1), args.at(index + 2), writeWords);
     return writeCommandFactory.create();
 }

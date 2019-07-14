@@ -57,6 +57,7 @@ std::string Base64::encode(u_char *buffer, uint bufferLength) {
 }
 
 std::shared_ptr<uint> Base64::decodeWords(std::string const &encoded) {
+    printf("%s\n", encoded.c_str());
     int inputLen = encoded.size();
     int i = 0;
     int j = 0;
@@ -102,12 +103,10 @@ std::shared_ptr<uint> Base64::decodeWords(std::string const &encoded) {
     std::shared_ptr<uint> bytes(new uint[(decodedChars.size() +  decodedChars.size() % 4) / 4]);
     uint w = 0;
     for (int k = 0; k < decodedChars.size(); ++k) {
-        w |= decodedChars[k];
+        w |= decodedChars[k] << (8 * (k - k / 4 * 4));
         if ((k + 1) % 4 == 0 || k == decodedChars.size() - 1) {
             bytes.get()[k / 4] = w;
             w = 0;
-        } else {
-            w <<= 8;
         }
     }
     return bytes;

@@ -37,7 +37,7 @@ TEST_F(Base64Test, encodeTest) {
 
 TEST_F(Base64Test, decodeTest) {
     std::string encoded = "MzIxMA==";
-    uint expected = (0x33 << 24) + (0x32 << 16) + (0x31 << 8) + 0x30;
+    uint expected = (0x30 << 24) + (0x31 << 16) + (0x32 << 8) + 0x33;
     Base64 base64;
     std::shared_ptr<uint> decoded = base64.decodeWords(encoded);
     EXPECT_EQ(expected, decoded.get()[0]);
@@ -46,10 +46,10 @@ TEST_F(Base64Test, decodeTest) {
 TEST_F(Base64Test, decodeTest2) {
     std::string encoded = "Y2hvcmF6eXRvcnBlZGE=";
     uint expected[] = {
-            (0x63 << 24) + (0x68 << 16) + (0x6F << 8) + 0x72,
-            (0x61 << 24) + (0x7A << 16) + (0x79 << 8) + 0x74,
-            (0x6F << 24) + (0x72 << 16) + (0x70 << 8) + 0x65,
-            (0x64 << 8) + 0x61,
+            (0x72 << 24) + (0x6F << 16) + (0x68 << 8) + 0x63,
+            (0x74 << 24) + (0x79 << 16) + (0x7A << 8) + 0x61,
+            (0x65 << 24) + (0x70 << 16) + (0x72 << 8) + 0x6F,
+            (0x61 << 8) + 0x64,
     };
     Base64 base64;
     std::shared_ptr<uint> decoded = base64.decodeWords(encoded);
@@ -62,6 +62,14 @@ TEST_F(Base64Test, decodeTest2) {
 TEST_F(Base64Test, decodeTest3) {
     std::string encoded = "QQ==";
     uint expected = 0x41;
+    Base64 base64;
+    std::shared_ptr<uint> decoded = base64.decodeWords(encoded);
+    EXPECT_EQ(expected, decoded.get()[0]);
+}
+
+TEST_F(Base64Test, decodeTest4) {
+    std::string encoded = "MQAAAA==";
+    uint expected = (0x0 << 24) + (0x0 << 16) + (0x0 << 8) + 0x31;
     Base64 base64;
     std::shared_ptr<uint> decoded = base64.decodeWords(encoded);
     EXPECT_EQ(expected, decoded.get()[0]);
