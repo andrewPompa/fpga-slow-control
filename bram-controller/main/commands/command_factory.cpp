@@ -80,7 +80,8 @@ WriteCommand *CommandFactory::createWriteCommand(bool isSilent) {
     if (this->args->size() < 4) {
         throw std::invalid_argument("Not enough options for write command");
     }
-    WriteCommandFactory writeCommandFactory(isSilent, this->args->at(index + 1), this->args->at(index + 2), this->args->at(index + 3));
+    std::vector<std::string> writeWords(args->begin() + 3, args->end());
+    WriteCommandFactory writeCommandFactory(isSilent, args->at(index + 1), args->at(index + 2), writeWords);
     return writeCommandFactory.create();
 }
 

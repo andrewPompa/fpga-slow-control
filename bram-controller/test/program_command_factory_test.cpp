@@ -50,7 +50,9 @@ TEST_F(ProgramCommandFactoryTest, writeOptionValidArguments) {
     args.emplace_back("-w");
     args.emplace_back("0xA0000000");
     args.emplace_back("0x3");
-    args.emplace_back("0xFFAAFFAA00110011BB22BB22");
+    args.emplace_back("0xFFAAFFAA");
+    args.emplace_back("0x00110011");
+    args.emplace_back("0x1");
     auto * factory = new CommandFactory(&args);
     ProgramCommand* command = factory->create();
     EXPECT_NE(command, nullptr);
@@ -104,7 +106,7 @@ TEST_F(ProgramCommandFactoryTest, ReadCommandParseVerboseArguments) {
     std::vector<std::string> args;
     args.emplace_back("bram_controller");
     args.emplace_back("-r");
-    args.emplace_back("0xFFFFFFFFF");
+    args.emplace_back("0xFFFFFFFF");
     args.emplace_back("0xFFFFFFFF");
     auto * factory = new CommandFactory(&args);
     auto * command = factory->create();

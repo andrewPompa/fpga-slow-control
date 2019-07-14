@@ -14,18 +14,16 @@
 #include "../../utils/hex_argument_reader.hpp"
 #include <climits>
 
-const std::regex hexRegexWithZeroPrefix("0x[0-9A-F]+");
-
 class WriteCommandFactory {
 private:
     const bool isSilent;
     const std::string & addressString;
     const std::string & numOfWordsToWriteString;
-    std::string & valueToWriteString;
+    std::vector<std::string> & writeWords;
 
 public:
-    explicit WriteCommandFactory(bool isSilent, std::string &address, std::string &numOfWordsToWrite, std::string &valueToWrite)
-            : isSilent(isSilent), addressString(address), numOfWordsToWriteString(numOfWordsToWrite), valueToWriteString(valueToWrite) {
+    explicit WriteCommandFactory(bool isSilent, std::string &address, std::string &numOfWordsToWrite, std::vector<std::string> & writeWords)
+            : isSilent(isSilent), addressString(address), numOfWordsToWriteString(numOfWordsToWrite), writeWords(writeWords) {
     }
     WriteCommand * create() {
         WriteCommand * command = nullptr;
@@ -40,19 +38,20 @@ public:
             }
             address = std::stol(addressString);
             numOfWordsToWrite = std::stol(numOfWordsToWriteString);
-            std::shared_ptr<uint> bytesToWrite = getValueFromBase64(valueToWriteString);
+            std::shared_ptr<uint> bytesToWrite = getValueFromBase64(writeWords.at(0));
             command = static_cast<WriteCommand*> (new WriteSilentCommand(address, numOfWordsToWrite, bytesToWrite));
         } else {
             HexArgumentReader hexArgumentReader;
             address = hexArgumentReader.readWord(addressString);
             numOfWordsToWrite = hexArgumentReader.readWord(numOfWordsToWriteString);
-
-            std::shared_ptr<uint> wordsToWrite = hexArgumentReader.readWords(valueToWriteString, numOfWordsToWrite);
-            if (wordsToWrite == nullptr) {
-                printf("sent words to write do not have 32 bits length, or value is not equal to specified num of words\n");
-                return nullptr;
+            if (numOfWordsToWrite != writeWords.size()) {
+                throw std::invalid_argument("num of words is different than sent words to write");
             }
-            command = static_cast<WriteCommand*> (new WriteVerboseCommand(address, numOfWordsToWrite, wordsToWrite));
+            std::shared_ptr<uint> valueToWrite(new uint[numOfWordsToWrite]);
+            for (int i = 0; i < numOfWordsToWrite; ++i) {
+                valueToWrite.get()[i] = hexArgumentReader.readWord(writeWords.at(i));
+            }
+            command = static_cast<WriteCommand*> (new WriteVerboseCommand(address, numOfWordsToWrite, valueToWrite));
         }
         return command;
     }
