@@ -17,16 +17,16 @@
 
 using namespace std;
 
-CommandFactory::CommandFactory(std::vector<std::string> *args) {
-    this->args = new vector<string>(*args);
-    this->args->erase(this->args->begin());
+CommandFactory::CommandFactory(std::vector<std::string> & args): args(args) {
+    args = vector<string>(args);
+    this->args.erase(this->args.begin());
 }
 
-ProgramCommand *CommandFactory::create() {
+std::shared_ptr<ProgramCommand> CommandFactory::create() {
     bool isSilent = hasArgument("-s") || hasArgument("--silent");
     try {
         return validateArgumentsAndCreate(isSilent);
-    } catch (std::invalid_argument & e) {
+    } catch (std::invalid_argument &e) {
         if (!isSilent) {
             printf("cannot create command: %s\n", e.what());
         }
@@ -34,10 +34,10 @@ ProgramCommand *CommandFactory::create() {
     }
 }
 
-ProgramCommand *CommandFactory::validateArgumentsAndCreate(bool isSilent) {
+std::shared_ptr<ProgramCommand> CommandFactory::validateArgumentsAndCreate(bool isSilent) {
     bool isHelp = hasArgument("-h") || hasArgument("--help");
     if (isHelp) {
-        return static_cast<ProgramCommand *> (new HelpVerboseCommand());
+        return std::shared_ptr<ProgramCommand>(new HelpVerboseCommand());
     }
 
     bool isRead = hasArgument("-r") || hasArgument("--read");
@@ -49,7 +49,7 @@ ProgramCommand *CommandFactory::validateArgumentsAndCreate(bool isSilent) {
         throw std::invalid_argument("no operations selected");
     }
 
-    ProgramCommand *programCommand = nullptr;
+    std::shared_ptr<ProgramCommand> programCommand = nullptr;
     if (isRead) {
         programCommand = createReadCommand(isSilent);
     } else if (isWrite) {
@@ -60,45 +60,45 @@ ProgramCommand *CommandFactory::validateArgumentsAndCreate(bool isSilent) {
     return programCommand;
 }
 
-ReadCommand *CommandFactory::createReadCommand(bool isSilent) {
+std::shared_ptr<ProgramCommand> CommandFactory::createReadCommand(bool isSilent) {
     int index = findOptionIndex("-r");
     if (index == -1) {
         index = findOptionIndex("--read");
     }
-    if (this->args->size() < 2) {
+    if (this->args.size() < 2) {
         throw std::invalid_argument("Not enough options for read command");
     }
-    ReadCommandFactory readCommandFactory(isSilent, this->args->at(index + 1), this->args->at(index + 2));
+    ReadCommandFactory readCommandFactory(isSilent, this->args.at(index + 1), this->args.at(index + 2));
     return readCommandFactory.create();
 }
 
-WriteCommand *CommandFactory::createWriteCommand(bool isSilent) {
+std::shared_ptr<ProgramCommand> CommandFactory::createWriteCommand(bool isSilent) {
     int index = findOptionIndex("-w");
     if (index == -1) {
         index = findOptionIndex("--write");
     }
-    if (this->args->size() < 4) {
+    if (this->args.size() < 4) {
         throw std::invalid_argument("Not enough options for write command");
     }
-    std::vector<std::string> writeWords(args->begin() + 3, args->end());
-    WriteCommandFactory writeCommandFactory(isSilent, args->at(index + 1), args->at(index + 2), writeWords);
+    std::vector<std::string> writeWords(args.begin() + 3, args.end());
+    WriteCommandFactory writeCommandFactory(isSilent, args.at(index + 1), args.at(index + 2), writeWords);
     return writeCommandFactory.create();
 }
 
-ClearCommand *CommandFactory::createClearCommand(bool isSilent) {
+std::shared_ptr<ProgramCommand> CommandFactory::createClearCommand(bool isSilent) {
     int index = findOptionIndex("-c");
     if (index == -1) {
         index = findOptionIndex("--clear");
     }
-    if (this->args->size() < 3) {
+    if (this->args.size() < 3) {
         throw std::invalid_argument("Not enough options for clear command");
     }
-    ClearCommandFactory clearCommandFactory(isSilent, this->args->at(index + 1), this->args->at(index + 2));
+    ClearCommandFactory clearCommandFactory(isSilent, this->args.at(index + 1), this->args.at(index + 2));
     return clearCommandFactory.create();
 }
 
 bool CommandFactory::hasArgument(const string &value) {
-    for (const string &argument: *args) {
+    for (const string &argument: args) {
         if (argument == value) {
             return true;
         }
@@ -107,8 +107,8 @@ bool CommandFactory::hasArgument(const string &value) {
 }
 
 int CommandFactory::findOptionIndex(const std::string &value) {
-    for (int i = 0; i < args->size(); ++i) {
-        if (args->at(i) == value) {
+    for (int i = 0; i < args.size(); ++i) {
+        if (args.at(i) == value) {
             return i;
         }
     }

@@ -12,18 +12,19 @@
 #include "clear/clear_command.hpp"
 
 class CommandFactory {
-public:
-    explicit CommandFactory(std::vector<std::string> * args);
-
-    ProgramCommand * create();
 private:
-    std::vector <std::string> * args;
+    std::vector <std::string>& args;
+public:
+    explicit CommandFactory(std::vector<std::string> & args);
 
-    ProgramCommand * validateArgumentsAndCreate(bool isSilent);
+    std::shared_ptr<ProgramCommand> create();
 
-    ReadCommand *createReadCommand(bool isSilent);
-    WriteCommand *createWriteCommand(bool isSilent);
-    ClearCommand *createClearCommand(bool isSilent);
+private:
+    std::shared_ptr<ProgramCommand> validateArgumentsAndCreate(bool isSilent);
+
+    std::shared_ptr<ProgramCommand> createReadCommand(bool isSilent);
+    std::shared_ptr<ProgramCommand> createWriteCommand(bool isSilent);
+    std::shared_ptr<ProgramCommand> createClearCommand(bool isSilent);
 
     int findOptionIndex(const std::string &value);
     bool hasArgument(const std::string &value);

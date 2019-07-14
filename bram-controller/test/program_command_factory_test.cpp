@@ -18,8 +18,8 @@ void ProgramCommandFactoryTest::TearDown() {}
 TEST_F(ProgramCommandFactoryTest, noOption) {
     std::vector<std::string> args;
     args.emplace_back("bram_controller");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -30,8 +30,8 @@ TEST_F(ProgramCommandFactoryTest, tooManyOptions) {
     args.emplace_back("-w");
     args.emplace_back("--read");
     args.emplace_back("-s");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -39,8 +39,8 @@ TEST_F(ProgramCommandFactoryTest, writeOptionWithoutArguments) {
     std::vector<std::string> args;
     args.emplace_back("bram_controller");
     args.emplace_back("-w");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -53,8 +53,8 @@ TEST_F(ProgramCommandFactoryTest, writeOptionValidArguments) {
     args.emplace_back("0xFFAAFFAA");
     args.emplace_back("0x00110011");
     args.emplace_back("0x1");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_NE(command, nullptr);
 }
 
@@ -66,8 +66,8 @@ TEST_F(ProgramCommandFactoryTest, writeOptionWithInvalidWordsArguments) {
     args.emplace_back("10995116280000");
     args.emplace_back("1");
     args.emplace_back("MzIxMA==");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -75,8 +75,8 @@ TEST_F(ProgramCommandFactoryTest, readOptionWithoutArguments) {
     std::vector<std::string> args;
     args.emplace_back("bram_controller");
     args.emplace_back("-r");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -84,8 +84,8 @@ TEST_F(ProgramCommandFactoryTest, isReadCommand) {
     std::vector<std::string> args;
     args.emplace_back("bram_controller");
     args.emplace_back("-r");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand* command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_EQ(command, nullptr);
 }
 
@@ -95,9 +95,9 @@ TEST_F(ProgramCommandFactoryTest, isHelpCommand) {
     args.emplace_back("-r");
     args.emplace_back("-s");
     args.emplace_back("--help");
-    auto * factory = new CommandFactory(&args);
-    ProgramCommand * programCommand = factory->create();
-    auto *toTest = dynamic_cast<HelpVerboseCommand *> (programCommand);
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> programCommand = factory->create();
+    auto *toTest = dynamic_cast<HelpVerboseCommand *> (programCommand.get());
     EXPECT_NE(toTest, nullptr);
 }
 
@@ -108,8 +108,8 @@ TEST_F(ProgramCommandFactoryTest, ReadCommandParseVerboseArguments) {
     args.emplace_back("-r");
     args.emplace_back("0xFFFFFFFF");
     args.emplace_back("0xFFFFFFFF");
-    auto * factory = new CommandFactory(&args);
-    auto * command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_NE(command, nullptr);
 }
 
@@ -120,7 +120,7 @@ TEST_F(ProgramCommandFactoryTest, ReadCommandParseSilentArguments) {
     args.emplace_back("--read");
     args.emplace_back("12345");
     args.emplace_back("14");
-    auto * factory = new CommandFactory(&args);
-    auto * command = factory->create();
+    auto * factory = new CommandFactory(args);
+    std::shared_ptr<ProgramCommand> command = factory->create();
     EXPECT_NE(command, nullptr);
 }

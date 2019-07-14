@@ -17,16 +17,19 @@
 class WriteCommandFactory {
 private:
     const bool isSilent;
-    const std::string & addressString;
-    const std::string & numOfWordsToWriteString;
-    std::vector<std::string> & writeWords;
+    const std::string &addressString;
+    const std::string &numOfWordsToWriteString;
+    std::vector<std::string> &writeWords;
 
 public:
-    explicit WriteCommandFactory(bool isSilent, std::string &address, std::string &numOfWordsToWrite, std::vector<std::string> & writeWords)
-            : isSilent(isSilent), addressString(address), numOfWordsToWriteString(numOfWordsToWrite), writeWords(writeWords) {
+    explicit WriteCommandFactory(bool isSilent, std::string &address, std::string &numOfWordsToWrite,
+                                 std::vector<std::string> &writeWords)
+            : isSilent(isSilent), addressString(address), numOfWordsToWriteString(numOfWordsToWrite),
+              writeWords(writeWords) {
     }
-    WriteCommand * create() {
-        WriteCommand * command = nullptr;
+
+    std::shared_ptr<ProgramCommand> create() {
+        std::shared_ptr<ProgramCommand> command = nullptr;
         uint address = 0;
         uint numOfWordsToWrite = 0;
         if (isSilent) {
@@ -39,7 +42,7 @@ public:
             address = std::stol(addressString);
             numOfWordsToWrite = std::stol(numOfWordsToWriteString);
             std::shared_ptr<uint> bytesToWrite = getValueFromBase64(writeWords.at(0));
-            command = static_cast<WriteCommand*> (new WriteSilentCommand(address, numOfWordsToWrite, bytesToWrite));
+            command = std::shared_ptr<ProgramCommand>(new WriteSilentCommand(address, numOfWordsToWrite, bytesToWrite));
         } else {
             HexArgumentReader hexArgumentReader;
             address = hexArgumentReader.readWord(addressString);
@@ -51,7 +54,8 @@ public:
             for (int i = 0; i < numOfWordsToWrite; ++i) {
                 valueToWrite.get()[i] = hexArgumentReader.readWord(writeWords.at(i));
             }
-            command = static_cast<WriteCommand*> (new WriteVerboseCommand(address, numOfWordsToWrite, valueToWrite));
+            command = std::shared_ptr<ProgramCommand>(
+                    new WriteVerboseCommand(address, numOfWordsToWrite, valueToWrite));
         }
         return command;
     }

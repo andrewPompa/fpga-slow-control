@@ -14,15 +14,16 @@
 class ReadCommandFactory {
 private:
     const bool isSilent;
-    const std::string & addressString;
-    const std::string & numOfWordsToReadString;
+    const std::string &addressString;
+    const std::string &numOfWordsToReadString;
 
 public:
     explicit ReadCommandFactory(bool isSilent, std::string &address, std::string &numOfWordsToRead)
             : isSilent(isSilent), addressString(address), numOfWordsToReadString(numOfWordsToRead) {
     }
-    ReadCommand * create() {
-        ReadCommand * command = nullptr;
+
+    std::shared_ptr<ProgramCommand> create() {
+        std::shared_ptr<ProgramCommand> command = nullptr;
         uint address = 0;
         uint numOfWordsToRead = 0;
         if (isSilent) {
@@ -37,7 +38,7 @@ public:
             if (numOfWordsToRead < 1) {
                 throw std::invalid_argument("num of words has to be greater than 1");
             }
-            command = static_cast<ReadCommand*> (new ReadSilentCommand(address, numOfWordsToRead));
+            command = std::shared_ptr<ProgramCommand>(new ReadSilentCommand(address, numOfWordsToRead));
         } else {
             HexArgumentReader hexArgumentReader;
             address = hexArgumentReader.readWord(addressString);
@@ -45,7 +46,7 @@ public:
             if (numOfWordsToRead < 1) {
                 throw std::invalid_argument("num of words has to be greater than 1");
             }
-            command = static_cast<ReadCommand*> (new ReadVerboseCommand(address, numOfWordsToRead));
+            command = std::shared_ptr<ProgramCommand>(new ReadVerboseCommand(address, numOfWordsToRead));
         }
         return command;
     }

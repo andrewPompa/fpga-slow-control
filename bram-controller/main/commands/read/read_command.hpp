@@ -19,7 +19,6 @@ public:
 protected:
     unsigned int address{};
     unsigned int numOfWordsToRead{};
-    unsigned int *readWords{};
     virtual int read() = 0;
 };
 

@@ -7,10 +7,9 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    vector<string>* args = new vector<string>(argv, argv + argc);
-    vector<string> v;
+    vector<string> args(argv, argv + argc);
     CommandFactory commandFactory(args);
-    ProgramCommand *programCommand = commandFactory.create();
+    std::shared_ptr<ProgramCommand> programCommand = commandFactory.create();
     if (programCommand != nullptr) {
         programCommand->execute();
     }
