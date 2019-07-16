@@ -19,6 +19,7 @@ using namespace std;
 
 CommandFactory::CommandFactory(std::vector<std::string> & args): args(args) {
     args = vector<string>(args);
+    programName = this->args.at(0);
     this->args.erase(this->args.begin());
 }
 
@@ -37,7 +38,7 @@ std::shared_ptr<ProgramCommand> CommandFactory::create() {
 std::shared_ptr<ProgramCommand> CommandFactory::validateArgumentsAndCreate(bool isSilent) {
     bool isHelp = hasArgument("-h") || hasArgument("--help");
     if (isHelp) {
-        return std::shared_ptr<ProgramCommand>(new HelpVerboseCommand());
+        return std::shared_ptr<ProgramCommand>(new HelpVerboseCommand(programName));
     }
 
     bool isRead = hasArgument("-r") || hasArgument("--read");

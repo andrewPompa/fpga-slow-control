@@ -31,8 +31,9 @@ public:
             numOfWordsToClear = std::stol(numOfWordsToClearString);
             command = std::shared_ptr<ProgramCommand>(new ClearSilentCommand(address, numOfWordsToClear));
         } else {
-            address = std::stol(addressString, nullptr, 16);
-            numOfWordsToClear = std::stol(numOfWordsToClearString, nullptr, 16);
+            HexArgumentReader hexArgumentReader;
+            address = hexArgumentReader.readWord(addressString);
+            numOfWordsToClear = hexArgumentReader.readWord(numOfWordsToClearString);
             command = std::shared_ptr<ProgramCommand>(new ClearVerboseCommand(address, numOfWordsToClear));
         }
         return command;

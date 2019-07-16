@@ -14,6 +14,7 @@
 class CommandFactory {
 private:
     std::vector <std::string>& args;
+    std::string programName;
 public:
     explicit CommandFactory(std::vector<std::string> & args);
 
