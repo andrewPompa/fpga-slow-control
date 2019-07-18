@@ -79,3 +79,11 @@ class FileNameService(object):
             return
         json.dump(json_value, f)
         f.close()
+
+    def delete_file(self, uuid_value):
+        configurations = self.find_valid_files()
+        configuration = filter(lambda config: config.startswith(uuid_value), configurations)
+        if configuration is None or len(configuration) == 0:
+            return
+        configuration = configuration[0]
+        os.remove(self.configuration_file_directory + "/" + configuration)

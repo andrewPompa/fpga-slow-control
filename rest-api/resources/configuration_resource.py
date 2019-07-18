@@ -74,5 +74,8 @@ class ConfigurationResource(object):
             resp.data = json.dumps({"error": 'invalid name: ' + json_configuration["name"]})
             resp.status = falcon.HTTP_500
 
-    def on_delete(self, req, resp, uuid):
-        print " on delete ", uuid
+    def on_delete(self, req, resp, uuid_value):
+        if self.file_name_service.is_file_exists(uuid_value) is False:
+            resp.status = falcon.HTTP_404
+            return
+        self.file_name_service.delete_file(uuid_value)
