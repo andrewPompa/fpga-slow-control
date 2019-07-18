@@ -1,53 +1,78 @@
 import falcon
 import json
+import datetime
 
 
 class ConfigurationResource(object):
-    def __init__(self, config_file_path):
-        self.config_file_path = config_file_path
+    def __init__(self, file_name_service):
+        self.file_name_service = file_name_service
 
     def validate_request_headers(req, resp, resource, params):
         if req.content_type != "application/json":
             msg = 'Request payload has to be json!'
             raise falcon.HTTPBadRequest('Bad request', msg)
 
-    @falcon.before(validate_request_headers)
-    def on_put(self, req, resp):
-        print "PUT REQUEST"
-        try:
-            configuration = json.loads(req.stream.read())
-        except ValueError, e:
-            print e
-            resp.status = falcon.HTTP_500
-            resp.data = "{\"error\": 'cannot parse configuration file'}"
-            return
-        print configuration
-        try:
-            f = open(self.config_file_path, 'w+')
-        except IOError:
-            print "cannot open config file"
-            resp.data = "{\"error\": 'cannot open config file'}"
-            resp.status = falcon.HTTP_500
-            return
-        json.dump(configuration, f)
-        f.close()
-        resp.status = falcon.HTTP_200
-
-    def on_get(self, req, resp, uuid):
-        print uuid
+    def on_get(self, req, resp, uuid_value):
         resp.content_type = "application/json"
         try:
-            f = open(self.config_file_path, 'r')
-            configuration = json.load(f)
-        except IOError:
-            print "config not set yet"
-            resp.status = falcon.HTTP_404
-            return
-        except ValueError:
-            print "cannot parse to json"
-            resp.data = "{\"error\": 'cannot parse configuration file'}"
+            json_configuration = self.file_name_service.get_file_by_uuid(uuid_value)
+        except OSError:
+            resp.data = json.dumps({"error": 'cannot open folder with configurations'})
             resp.status = falcon.HTTP_500
             return
-        f.close()
-        resp.media = configuration
+        except ValueError:
+            resp.data = json.dumps({"error": 'cannot parse configuration file'})
+            resp.status = falcon.HTTP_500
+            return
+        if json_configuration is None:
+            resp.status = falcon.HTTP_204
+            return
+        resp.media = json_configuration
         resp.status = falcon.HTTP_200
+
+    @falcon.before(validate_request_headers)
+    def on_post_add_configuration(self, req, resp):
+        file_id = self.file_name_service.generate_new_file_id()
+        today = datetime.date.today().strftime("%Y%m%d")
+        try:
+            json_configuration = json.loads(req.stream.read())
+            self.file_name_service.save_file(file_id, today, json_configuration)
+            resp.data = json.dumps({"uuid": str(file_id)})
+            resp.status = falcon.HTTP_201
+        except OSError:
+            resp.data = json.dumps({"error": 'cannot open folder with configurations'})
+            resp.status = falcon.HTTP_500
+        except ValueError:
+            resp.data = json.dumps({"error": 'cannot parse configuration file'})
+            resp.status = falcon.HTTP_500
+        except NameError:
+            resp.data = json.dumps({"error": 'invalid name: ' + json_configuration["name"]})
+            resp.status = falcon.HTTP_500
+
+
+    @falcon.before(validate_request_headers)
+    def on_put(self, req, resp, uuid_value):
+        resp.content_type = "application/json"
+        json_configuration = None
+        if self.file_name_service.is_file_exists(uuid_value) is False:
+            resp.status = falcon.HTTP_204
+            return
+
+        try:
+            json_configuration = json.loads(req.stream.read())
+            self.file_name_service.update_file(uuid_value, json_configuration)
+            updated_json = self.file_name_service.get_file_by_uuid(uuid_value)
+            resp.media = updated_json
+            resp.status = falcon.HTTP_200
+        except OSError:
+            resp.data = json.dumps({"error": 'cannot open folder with configurations'})
+            resp.status = falcon.HTTP_500
+        except ValueError:
+            resp.data = json.dumps({"error": 'cannot parse configuration file'})
+            resp.status = falcon.HTTP_500
+        except NameError:
+            resp.data = json.dumps({"error": 'invalid name: ' + json_configuration["name"]})
+            resp.status = falcon.HTTP_500
+
+    def on_delete(self, req, resp, uuid):
+        print " on delete ", uuid
