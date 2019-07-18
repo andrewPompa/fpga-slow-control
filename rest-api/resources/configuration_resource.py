@@ -33,8 +33,8 @@ class ConfigurationResource(object):
         f.close()
         resp.status = falcon.HTTP_200
 
-    def on_get(self, req, resp):
-        print "GET REQUEST"
+    def on_get(self, req, resp, uuid):
+        print uuid
         resp.content_type = "application/json"
         try:
             f = open(self.config_file_path, 'r')
