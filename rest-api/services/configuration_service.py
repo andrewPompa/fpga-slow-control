@@ -1,17 +1,17 @@
 import json
 import os
 import re
+import shutil
 import uuid
 
 
-class FileNameService(object):
-    file_name_regex = re.compile("^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+_\d{8}\.json$")
-
-    def __init__(self, configuration_file_directory):
+class ConfigurationService(object):
+    def __init__(self, configuration_file_directory, file_name_regex):
         self.configuration_file_directory = configuration_file_directory
+        self.file_name_regex = file_name_regex
 
     def is_valid_file_name(self, file_name):
-        return re.match(FileNameService.file_name_regex, file_name)
+        return re.match(self.file_name_regex, file_name)
 
     def generate_new_file_id(self):
         return uuid.uuid4()
@@ -87,3 +87,6 @@ class FileNameService(object):
             return
         configuration = configuration[0]
         os.remove(self.configuration_file_directory + "/" + configuration)
+
+    def create_directory_in_configuration_path(self, directory_path):
+        os.mkdir(self.configuration_file_directory + "/" + directory_path)
