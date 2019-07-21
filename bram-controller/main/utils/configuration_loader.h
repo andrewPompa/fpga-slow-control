@@ -55,7 +55,7 @@ public:
             throw std::invalid_argument("cannot find argument in file!");
         }
         std::vector<std::string> stringValues = split(list, listDelimiter);
-        std::vector<uint> values(stringValues.size());
+        std::vector<uint> values;
         HexArgumentReader hexArgumentReader;
         for (const auto & stringValue : stringValues) {
             uint word = hexArgumentReader.readWord(stringValue);

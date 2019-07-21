@@ -23,7 +23,6 @@ public:
         }
         Base64 base64;
         std::string value = base64.encode(memory, numOfWordsToRead * 4);
-        printf("%s\n", value.c_str());
         closeMemory(reinterpret_cast<uint *>(memory));
         return value;
     }

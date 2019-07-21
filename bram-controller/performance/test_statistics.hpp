@@ -8,10 +8,10 @@
 
 class TestStatistics {
 public:
-    double mean;
-    double median;
-    double mode;
-    double standardDeviation;
+    double mean = 0.0;
+    double median = 0.0;
+    double mode = 0.0;
+    double standardDeviation = 0.0;
 
     void print() {
         printf("mean %f, median %f, mode: %f, deviation: %f\n", mean, median, mode, standardDeviation);
