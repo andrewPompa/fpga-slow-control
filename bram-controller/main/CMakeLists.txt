@@ -18,6 +18,7 @@ file(GLOB bram_controller_SRC
         "commands/clear/clear_command.hpp"
         "base64/base_64.cpp"
         "base64/base_64.hpp"
+        "utils/configuration_loader.h"
         "commands/clear/clear_command_factory.hpp"
         "exceptions/memory_exception.hpp"
         "utils/hex_argument_reader.hpp"
