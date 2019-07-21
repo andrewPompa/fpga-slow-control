@@ -8,6 +8,7 @@ option(BUILD_TEST "Build tests" ON)
 enable_testing()
 
 add_subdirectory(main)
+add_subdirectory(performance)
 
 set(MEMORY_FILE_LOCATION "/dev/mem")
 

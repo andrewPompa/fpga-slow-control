@@ -1,0 +1,2 @@
+add_executable(performance_test performance_test.cpp configuration_loader.h)
+target_link_libraries(performance_test bram_controller_lib)
