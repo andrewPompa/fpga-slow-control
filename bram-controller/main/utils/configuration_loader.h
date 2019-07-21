@@ -34,9 +34,19 @@ public:
         return std::stoi(value);
     }
 
-    int getAsUInt(std::string const &argumentName) {
+    uint getAsUInt(std::string const &argumentName) {
         const std::string value = getAsString(argumentName);
         return std::stol(value);
+    }
+
+    long getAsLong(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        return std::stol(value);
+    }
+
+    ulong getAsULong(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        return std::stoul(value);
     }
 
     std::vector<uint> getAsWordList(std::string const &argumentName) {
