@@ -57,7 +57,6 @@ std::string Base64::encode(u_char *buffer, uint bufferLength) {
 }
 
 std::shared_ptr<uint> Base64::decodeWords(std::string const &encoded) {
-    printf("%s\n", encoded.c_str());
     int inputLen = encoded.size();
     int i = 0;
     int j = 0;
