@@ -74,6 +74,9 @@ public:
         }
         file.clear();
         file.seekg(0, std::ifstream::beg);
+        if (line.empty()) {
+            throw std::invalid_argument("cannot get argument! " + argumentName);
+        }
         return line;
     }
 

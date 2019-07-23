@@ -36,7 +36,40 @@ public:
     }
 
     void print() {
-        printf("min: %.0f, max: %.0f, mean %f, median %f, deviation: %f\n", min, max, mean, median, standardDeviation);
+        printf("min: %.1f[ns], max: %.1f[ns], mean %.1f[ns], median %.1f[ns], deviation: %.1f[ns]\n", min, max, mean, median, standardDeviation);
+        printHistogram();
+    }
+
+private:
+    void printHistogram() {
+        double k = std::sqrt(testSize);
+        double h = (max - min) / k;
+        uint histogram[static_cast<int>(k)];
+        int i;
+        for (i = 0; i < k; ++i) {
+            histogram[i] = 0;
+        }
+        for (i = 0; i < testSize; ++i) {
+            int n = (double (times[i] - min)) / h;
+            histogram[n]++;
+        }
+        uint maxHistogram = 0;
+        for (i = 0; i < k; ++i) {
+            if (histogram[i] >= maxHistogram) {
+                maxHistogram = histogram[i];
+            }
+        }
+        for (i = 0; i < k; ++i) {
+            if (150 * histogram[i] / maxHistogram < 1) {
+                continue;
+            }
+            printf("[%03d] = (%.0f[ns]  - %.0f[ns]) %03d values\t", i, min + i * k, min + (i + 1) * k, histogram[i]);
+            for (int j = 0; j < 150 * histogram[i] / maxHistogram; ++j) {
+                printf("*");
+            }
+            printf("\n");
+
+        }
     }
 };
 
