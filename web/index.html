@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DJPET Slow Control</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="scripts/navbar.js"></script>
+</head>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <img class="navbar-brand" src="assets/slow-control.png" width="55" height="60"/>
+        <span class="navbar-brand">D-JPET Slow Control</span>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <button id="currentDataButton" class="nav-link btn btn-outline-primary active" onclick="onClickCurrentDataButton()">Current data</button>
+            </li>
+            <li class="nav-item ml-2">
+                <button id="historicalDataButton" class="nav-link btn btn-outline-primary" onclick="onClickHistoricalDataButton()">Historical data</button>
+            </li>
+        </ul>
+        <button id="addNewLayout" class="nav-link btn btn-outline-success mr-2" onclick="onAddNewLayout()">Add new layout</button>
+        <form id="selectForm" class="form-inline my-2 my-lg-0">
+            <select id="layoutSelect" class="form-control form-control-md custom-select" onchange="onChangeLayoutSelect(this)">
+                <option>[Select layout...]</option>
+                <option>Add new layout</option>
+            </select>
+        </form>
+    </nav>
+</header>
+<body>
+    <div class="jumbotron">
+        <h1 class="display-4">Hello, world!</h1>
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        </p>
+    </div>
+</body>
+</html>
