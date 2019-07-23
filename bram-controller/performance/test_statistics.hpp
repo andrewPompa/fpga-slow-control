@@ -63,7 +63,7 @@ private:
             if (150 * histogram[i] / maxHistogram < 1) {
                 continue;
             }
-            printf("[%03d] = (%.0f[ns]  - %.0f[ns]) %03d values\t", i, min + i * k, min + (i + 1) * k, histogram[i]);
+            printf("[%03d] = (%.0f[ns]  - %.0f[ns]) %04d values\t", i, min + i * k, min + (i + 1) * k, histogram[i]);
             for (int j = 0; j < 150 * histogram[i] / maxHistogram; ++j) {
                 printf("*");
             }
