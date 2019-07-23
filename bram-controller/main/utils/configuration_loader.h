@@ -34,9 +34,19 @@ public:
         return std::stoi(value);
     }
 
-    int getAsUInt(std::string const &argumentName) {
+    uint getAsUInt(std::string const &argumentName) {
         const std::string value = getAsString(argumentName);
         return std::stol(value);
+    }
+
+    long getAsLong(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        return std::stol(value);
+    }
+
+    ulong getAsULong(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        return std::stoul(value);
     }
 
     std::vector<uint> getAsWordList(std::string const &argumentName) {
@@ -45,7 +55,7 @@ public:
             throw std::invalid_argument("cannot find argument in file!");
         }
         std::vector<std::string> stringValues = split(list, listDelimiter);
-        std::vector<uint> values(stringValues.size());
+        std::vector<uint> values;
         HexArgumentReader hexArgumentReader;
         for (const auto & stringValue : stringValues) {
             uint word = hexArgumentReader.readWord(stringValue);
@@ -64,6 +74,9 @@ public:
         }
         file.clear();
         file.seekg(0, std::ifstream::beg);
+        if (line.empty()) {
+            throw std::invalid_argument("cannot get argument! " + argumentName);
+        }
         return line;
     }
 

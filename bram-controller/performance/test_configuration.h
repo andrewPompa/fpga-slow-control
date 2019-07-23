@@ -8,9 +8,9 @@
 
 class TestConfiguration {
 public:
-    uint numOfTests = 100000;
-    uint smallTestSize = 1000000 / 4;
-    uint bigTestSize = 1000 / 4;
+    ulong numOfTests = 100000;
+    ulong smallTestSize = 1000 / 4;
+    ulong bigTestSize = 1000000 / 4;
     std::vector<uint> addresses;
 };
 
