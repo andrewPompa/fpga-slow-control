@@ -19,7 +19,7 @@ public:
     void performTest(ulong numOfTest, ulong testSize) {
         printf("[PROCESSOR] Running %ld tests with %ld words\n", numOfTest, testSize);
         auto *readsAndWrites = new double[numOfTest];
-        auto *programMemoryBlock = new uint[numOfTest];
+        auto *programMemoryBlock = new uint[testSize];
         for (int i = 0; i < numOfTest; ++i) {
             std::shared_ptr<uint> testWords = generateRandomWords(testSize);
             WriteProgramMemoryCommand writeProgramMemoryCommand(programMemoryBlock, testSize, testWords);

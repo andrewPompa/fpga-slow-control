@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     TestConfiguration testConfiguration;
     try {
         testConfiguration = parseArguments(argv[1]);
-        printf("|Small test for %ld words\n", testConfiguration.smallTestSize);
+        printf("Small test for %ld words\n", testConfiguration.smallTestSize);
 
         performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.smallTestSize);
         for (uint address : testConfiguration.addresses) {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (!testConfiguration.runBigTest) {
-            printf("big test is disabled, skipping\n");
+            printf("Big test is disabled, skipping\n");
             return 0;
         }
         printf("Big test for %ld words\n", testConfiguration.bigTestSize);
