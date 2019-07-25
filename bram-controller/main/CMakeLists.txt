@@ -22,6 +22,9 @@ file(GLOB bram_controller_SRC
         "commands/clear/clear_command_factory.hpp"
         "exceptions/memory_exception.hpp"
         "utils/hex_argument_reader.hpp"
+        "commands/write/write_program_memory_command.hpp"
+        "commands/write/performance_check_read_command.hpp"
+        "commands/write/read_program_memory_command.hpp"
         "../program_settings.h"
         )
 

@@ -13,12 +13,14 @@ public:
     double standardDeviation = 0.0;
     double min = 0.0;
     double max = 0.0;
+    double speed = 0.0;
 private:
     double * times;
     ulong testSize;
+    uint words;
 
 public:
-    explicit TestStatistics(double *times, ulong testSize): times(times), testSize(testSize) {}
+    explicit TestStatistics(double *times, ulong testSize, uint words): times(times), testSize(testSize), words(words) {}
 
     void calculate() {
         double sum = 0.0;
@@ -33,10 +35,12 @@ public:
         mean = sum / testSize;
         median = times[testSize / 2];
         standardDeviation = std::sqrt(squareSum / testSize - mean * mean);
+        speed = (words * 32 * 10e3) / (mean * 8);
     }
 
     void print() {
         printf("min: %.1f[ns], max: %.1f[ns], mean %.1f[ns], median %.1f[ns], deviation: %.1f[ns]\n", min, max, mean, median, standardDeviation);
+        printf("operation speed is: %.3f[MB/s]\n", speed);
         printHistogram();
     }
 

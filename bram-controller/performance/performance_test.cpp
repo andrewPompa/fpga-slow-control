@@ -11,12 +11,22 @@
 #include <commands/write/write_silent_command.hpp>
 #include <commands/read/read_silent_command.hpp>
 #include <random>
+#include <commands/write/write_program_memory_command.hpp>
+#include <commands/read/read_program_memory_command.hpp>
 #include "test_configuration.h"
 #include "test_statistics.hpp"
+#include "tests/processor_write_test.hpp"
+#include "tests/processor_read_test.hpp"
+#include "tests/processor_read_write_test.hpp"
+#include "tests/write_test.hpp"
+#include "tests/read_test.hpp"
+#include "tests/read_write_test.hpp"
 
 TestConfiguration parseArguments(std::string const &fileName) {
     ConfigurationLoader configurationLoader(fileName);
     TestConfiguration testConfiguration;
+    testConfiguration.testMode = configurationLoader.getAsInt("test.mode");
+    testConfiguration.runBigTest = configurationLoader.getAsBool("run.big.test");
     testConfiguration.addresses = configurationLoader.getAsWordList("addresses");
     testConfiguration.numOfTests = configurationLoader.getAsULong("num.of.tests");
     testConfiguration.smallTestSize = configurationLoader.getAsULong("words.small.test");
@@ -24,70 +34,31 @@ TestConfiguration parseArguments(std::string const &fileName) {
     return testConfiguration;
 }
 
-std::shared_ptr<uint> generateRandomWords(ulong testSize) {
-    std::shared_ptr<uint> value(new uint[testSize]);
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint> dis(1, UINT32_MAX);
-
-    for (int n = 0; n < testSize; ++n) {
-        value.get()[n] = dis(gen);
+void performProcessorTest(int mode, ulong numOfTest, ulong testSize) {
+    if (mode == 1) {
+        ProcessorWriteTest writeTest;
+        writeTest.performTest(numOfTest, testSize);
+    } else if (mode == 2) {
+        ProcessorReadTest readTest;
+        readTest.performTest(numOfTest, testSize);
+    } else if (mode == 3) {
+        ProcessorReadWriteTest readWriteTest;
+        readWriteTest.performTest(numOfTest, testSize);
     }
-    return value;
 }
 
-bool testIfOperationIsOk(std::string const &readValue, std::shared_ptr<uint> &testWords, uint testSize) {
-    Base64 base64;
-    std::shared_ptr<uint> readWords = base64.decodeWords(readValue);
-    for (int i = 0; i < testSize; ++i) {
-        if (testWords.get()[i] != readWords.get()[i]) {
-            return false;
-        }
+void performTest(int mode, uint address, ulong numOfTest, ulong testSize) {
+    if (mode == 1) {
+        WriteTest writeTest;
+        writeTest.performTest(address, numOfTest, testSize);
+    } else if (mode == 2) {
+        ReadTest readTest;
+        readTest.performTest(address, numOfTest, testSize);
+    } else if (mode == 3) {
+        ReadWriteTest readWriteTest;
+        readWriteTest.performTest(address, numOfTest, testSize);
     }
-    return true;
 }
-
-TestStatistics calculateStatistics(double *results, ulong numOfTests) {
-    TestStatistics testStatistics(results, numOfTests);
-    testStatistics.calculate();
-    return testStatistics;
-}
-
-void performTest(uint address, ulong numOfTest, ulong testSize) {
-    printf("Running %ld tests with %ld words for 0x%X\n", numOfTest, testSize, address);
-    double reads[numOfTest];
-    double writes[numOfTest];
-    double readsAndWrites[numOfTest];
-    for (int i = 0; i < numOfTest; ++i) {
-        std::shared_ptr<uint> testWords = generateRandomWords(testSize);
-        WriteSilentCommand writeSilentCommand(address, testSize, testWords);
-        ReadSilentCommand readSilentCommand(address, testSize);
-
-        auto startWrite = std::chrono::high_resolution_clock::now();
-        writeSilentCommand.execute();
-        auto finishWriteStartRead = std::chrono::high_resolution_clock::now();
-        std::string readValue = readSilentCommand.readValue();
-        auto finishRead = std::chrono::high_resolution_clock::now();
-
-        if (!testIfOperationIsOk(readValue, testWords, testSize)) {
-            throw std::invalid_argument("read value is different than generated!");
-        }
-
-        writes[i] = (finishWriteStartRead - startWrite).count();
-        reads[i] = (finishRead - finishWriteStartRead).count();
-        readsAndWrites[i] = (finishRead - startWrite).count();
-    }
-    auto writeStatistics = calculateStatistics(writes, numOfTest);
-    auto readStatistics = calculateStatistics(reads, numOfTest);
-    auto readAndWriteStatistics = calculateStatistics(readsAndWrites, numOfTest);
-    printf("write statistics: ");
-    writeStatistics.print();
-    printf("read statistics: ");
-    readStatistics.print();
-    printf("read and write statistics: ");
-    readAndWriteStatistics.print();
-}
-
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -97,14 +68,21 @@ int main(int argc, char *argv[]) {
     TestConfiguration testConfiguration;
     try {
         testConfiguration = parseArguments(argv[1]);
-        printf("Small test for %ld words\n", testConfiguration.smallTestSize);
+        printf("|Small test for %ld words\n", testConfiguration.smallTestSize);
+
+        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.smallTestSize);
         for (uint address : testConfiguration.addresses) {
-            performTest(address, testConfiguration.numOfTests, testConfiguration.smallTestSize);
+            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.smallTestSize);
         }
 
+        if (!testConfiguration.runBigTest) {
+            printf("big test is disabled, skipping\n");
+            return 0;
+        }
         printf("Big test for %ld words\n", testConfiguration.bigTestSize);
+        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.bigTestSize);
         for (uint address : testConfiguration.addresses) {
-            performTest(address, testConfiguration.numOfTests, testConfiguration.bigTestSize);
+            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.bigTestSize);
         }
     } catch (std::invalid_argument const &e) {
         printf("error during getting configuration file: %s!\n", e.what());
