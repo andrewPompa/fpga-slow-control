@@ -8,10 +8,12 @@
 
 class TestConfiguration {
 public:
+    bool runBigTest = false;
     ulong numOfTests = 100000;
     ulong smallTestSize = 1000 / 4;
     ulong bigTestSize = 1000000 / 4;
     std::vector<uint> addresses;
+    int testMode;
 };
 
 
