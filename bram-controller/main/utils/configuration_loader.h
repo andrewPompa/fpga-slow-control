@@ -29,6 +29,17 @@ public:
         }
     }
 
+    bool getAsBool(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        if (value == "0" || value == "FALSE" || value == "false") {
+            return false;
+        }
+        if (value == "1" || value == "TRUE" || value == "true") {
+            return true;
+        }
+        throw std::invalid_argument("cannot parse argument to boolean!");
+    }
+
     int getAsInt(std::string const &argumentName) {
         const std::string value = getAsString(argumentName);
         return std::stoi(value);
