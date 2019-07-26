@@ -13,6 +13,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="scripts/navbar.js"></script>
+    <script src="scripts/new-layout.js"></script>
 </head>
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -37,75 +38,82 @@
 </header>
 <body>
 <div class="jumbotron">
-    <form>
+    <h3>Configure</h3>
+    <form id="newLayoutForm" class="needs-validation" novalidate>
         <div class="form-row align-items-center">
-            <div class="col-md-8">
+            <div class="col-md-4">
                 <label class="sr-only" for="inlineFormInput">Name</label>
                 <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Layout name">
+                <div class="invalid-feedback">Please provide item name</div>
             </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn w-100 btn-success mb-2">Submit</button>
+            <div class="col-md-2">
+                <button type="submit" class="btn w-100 btn-primary mb-2">Submit</button>
+            </div>
+        </div>
+    </form>
+    <form class="needs-validation" novalidate>
+        <h5 class="mt-2">Add new item</h5>
+        <div class="form-row align-items-center">
+            <div class="col-md-1">Chose type:</div>
+            <div class="col-md-1">
+                <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="newLayoutTextboxRadio" name="radio-stacked" required>
+                    <label class="custom-control-label" for="newLayoutTextboxRadio">Textbox</label>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="custom-control custom-radio ml-2">
+                    <input type="radio" class="custom-control-input" id="newLayoutChartRadio" name="radio-stacked" required>
+                    <label class="custom-control-label" for="newLayoutChartRadio">Chart</label>
+                </div>
             </div>
         </div>
         <div class="form-row align-items-center">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="sr-only" for="itemNameInput">Item name</label>
-                <input type="text" class="form-control" id="itemNameInput" placeholder="Item name">
-            </div>
-            <div class="col-md-3">
-                <label class="sr-only" for="addressInput">Address</label>
-                <input type="text" class="form-control" id="addressInput" placeholder="Hexadecimal address">
+                <input type="text" class="form-control" id="itemNameInput" placeholder="Item name" oninput="setNewItemValue('inputName', this.value);">
+                <div id="itemNameInputError" class="invalid-tooltip"></div>
             </div>
             <div class="col-md-2">
+                <label class="sr-only" for="addressInput">Address</label>
+                <input type="text" class="form-control" id="addressInput" placeholder="Hex address" oninput="setNewItemValue('address', this.value);">
+                <div id="addressInputError" class="invalid-tooltip"></div>
+            </div>
+            <div class="col-md-1">
                 <label class="sr-only" for="wordsInput">Words</label>
-                <input type="text" class="form-control" id="wordsInput" placeholder="words">
-            </div>
-            <div class="col-md-2" style="text-align: center">
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="customControlValidation2" name="radio-stacked" required>
-                    <label class="custom-control-label" for="customControlValidation2">Textbox</label>
-                </div>
-            </div>
-            <div class="col-md-2" style="text-align: center">
-                <div class="custom-control custom-radio ml-2">
-                    <input type="radio" class="custom-control-input" id="customControlValidation3" name="radio-stacked" required>
-                    <label class="custom-control-label" for="customControlValidation3">Chart</label>
-                    <div class="invalid-feedback">More example invalid feedback text</div>
-                </div>
+                <input type="text" class="form-control" id="wordsInput" placeholder="words" oninput="setNewItemValue('words', this.value);">
+                <div id="wordsInputError" class="invalid-tooltip"></div>
             </div>
         </div>
-        <div class="form-row align-items-center mt-2">
-            <div class="col-md-2 dropdown">
-                <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div id="newLayoutTextboxForm" class="form-row align-items-center mt-2" hidden>
+            <div class="col-md-2 dropdown" >
+                <button class="btn btn-warning dropdown-toggle w-100" type="button" id="newInputDateTypeMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Data type
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">Date</a>
-                    <a class="dropdown-item" href="#">Hexadecimal value</a>
-                    <a class="dropdown-item" href="#">Mathematical formula</a>
+                    <a class="dropdown-item" onclick="onChangeDateType(dateType.date, 'Date', 'textboxFormulaInput')">Date</a>
+                    <a class="dropdown-item" onclick="onChangeDateType(dateType.hex, 'Hexadecimal value', 'textboxFormulaInput')">Hexadecimal value</a>
+                    <a class="dropdown-item" onclick="onChangeDateType(dateType.math, 'Mathematical formula', 'textboxFormulaInput')">Mathematical formula</a>
                 </div>
+                <div id="newInputDateTypeMenuError" class="invalid-tooltip"></div>
             </div>
-            <div class="col-md-4">
-                <label class="sr-only" for="formulaInput">Formula</label>
-                <input type="text" class="form-control" id="formulaInput" placeholder="formula">
+            <div class="col-md-2">
+                <label class="sr-only" for="textboxFormulaInput">Formula</label>
+                <input type="text" class="form-control" id="textboxFormulaInput" placeholder="Formula" oninput="setNewItemValue('formula', this.value)" disabled>
+                <div id="textboxFormulaInputError" class="invalid-tooltip"></div>
             </div>
-            <div class="col-md-2 ">
+            <div class="col-md-1" style="text-align: center">
                 <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="customControlValidation1" required>
-                    <label class="custom-control-label" for="customControlValidation1">Read only</label>
-                    <div class="invalid-feedback">Example invalid feedback text</div>
+                    <input type="checkbox" class="custom-control-input" id="newLayoutReadOnly">
+                    <label class="custom-control-label" for="newLayoutReadOnly">Read only</label>
                 </div>
             </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn w-100 btn-success">Add new textbox</button>
+            <div class="col-md-2">
+                <button type="button" class="btn w-100 btn-primary" onclick="newLayoutValidateAndSaveTextBox()">Add new textbox</button>
             </div>
         </div>
-        <div class="form-row align-items-center mt-2">
-            <div class="col-md-3">
-                <label class="sr-only" for="intervalInput">Interval</label>
-                <input type="text" class="form-control" id="intervalInput" placeholder="Interval">
-            </div>
-            <div class="col-md-2 dropdown">
+        <div id="newLayoutChartForm" class="form-row align-items-center mt-2" hidden>
+            <div class="col-md-1 dropdown">
                 <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="chartDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                     Data type
@@ -115,68 +123,19 @@
                     <a class="dropdown-item" href="#">Mathematical formula</a>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="sr-only" for="chartFormulaInput">Formula</label>
                 <input type="text" class="form-control" id="chartFormulaInput" placeholder="Formula">
             </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn w-100 btn-success">Add new chart</button>
+            <div class="col-md-1">
+                <label class="sr-only" for="intervalInput">Interval</label>
+                <input type="text" class="form-control" id="intervalInput" placeholder="Interval">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn w-100 btn-primary">Add new chart</button>
             </div>
         </div>
     </form>
-    <!--    <form>-->
-    <!--        <div class="form-row align-items-center">-->
-    <!--            <div class="col-md-8">-->
-    <!--                <label class="sr-only" for="inlineFormInput">Name</label>-->
-    <!--                <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Layout name">-->
-    <!--            </div>-->
-    <!--            <div class="col-md-4">-->
-    <!--                <button type="submit" class="btn w-100 btn-success mb-2">Submit</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--        <div class="form-row align-items-center">-->
-    <!--            <div class="col-auto">-->
-    <!--                <label class="sr-only" for="addressInput">Address</label>-->
-    <!--                <input type="text" class="form-control" id="addressInput" placeholder="Hexadecimal address">-->
-    <!--            </div>-->
-    <!--            <div class="col-md-1 mr-1">-->
-    <!--                <label class="sr-only" for="addressInput">Words</label>-->
-    <!--                <input type="text" class="form-control" id="wordsInput" placeholder="words">-->
-    <!--            </div>-->
-    <!--            <div class="btn-group mr-2">-->
-    <!--                <button type="button" class="btn btn-info">Type</button>-->
-    <!--                <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-    <!--                </button>-->
-    <!--                <div class="dropdown-menu">-->
-    <!--                    <a class="dropdown-item" href="#">Input</a>-->
-    <!--                    <a class="dropdown-item" href="#">Field</a>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="btn-group">-->
-    <!--                <button type="button" class="btn btn-danger">Permission</button>-->
-    <!--                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-    <!--                    <span class="sr-only">Toggle Dropdown</span>-->
-    <!--                </button>-->
-    <!--                <div class="dropdown-menu">-->
-    <!--                    <a class="dropdown-item" href="#">Read</a>-->
-    <!--                    <a class="dropdown-item" href="#">Read & Write</a>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="btn-group">-->
-    <!--                <button type="button" class="btn btn-danger">Read</button>-->
-    <!--                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-    <!--                    <span class="sr-only">Toggle Dropdown</span>-->
-    <!--                </button>-->
-    <!--                <div class="dropdown-menu">-->
-    <!--                    <a class="dropdown-item" href="#">Read</a>-->
-    <!--                    <a class="dropdown-item" href="#">Read & Write</a>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="col-auto">-->
-    <!--                <button type="submit" class="btn w-100 btn-success">Add new item</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </form>-->
 </div>
 </body>
 </html>
