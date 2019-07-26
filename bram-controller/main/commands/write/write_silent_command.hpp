@@ -21,7 +21,9 @@ private:
         } catch (const MemoryException &e) {
             return 1;
         }
-        memcpy(memory, words.get(), numOfWordsToWrite * 4);
+        for (int i = 0; i < numOfWordsToWrite; ++i) {
+            memory[i] = words.get()[i];
+        }
         closeMemory(memory);
         return 0;
     }

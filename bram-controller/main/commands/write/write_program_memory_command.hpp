@@ -17,7 +17,9 @@ public:
     }
 private:
     int write() override {
-        memcpy(memory, words.get(), numOfWordsToWrite * 4);
+        for (int i = 0; i < numOfWordsToWrite; ++i) {
+            memory[i] = words.get()[i];
+        }
         return 0;
     }
 };
