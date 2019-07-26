@@ -1,0 +1,23 @@
+Small test for 256 words
+[PROCESSOR] Running 10000 tests with 256 words
+[PROCESSOR] read statistics: min: 10371.0[ns], max: 33023.0[ns], mean 10391.7[ns], median 10371.0[ns], deviation: 385.4[ns]
+mean speed: 98.540[MB/s], top speed: 98.737[MB/s], min speed: 31.009[MB/s]
+[000] = (10371[ns]  - 10471[ns]) 9969 values	******************************************************************************************************************************************************
+Running 10000 tests with 256 words for 0x0
+read statistics: min: 20722.0[ns], max: 120282.0[ns], mean 21364.5[ns], median 21102.0[ns], deviation: 4307.7[ns]
+mean speed: 47.930[MB/s], top speed: 49.416[MB/s], min speed: 8.513[MB/s]
+[000] = (20722[ns]  - 20822[ns]) 9811 values	******************************************************************************************************************************************************
+[001] = (20822[ns]  - 20922[ns]) 0091 values	*
+Big test for 2560 words
+[PROCESSOR] Running 10000 tests with 2560 words
+[PROCESSOR] read statistics: min: 102540.0[ns], max: 201580.0[ns], mean 102674.6[ns], median 102540.0[ns], deviation: 1263.4[ns]
+mean speed: 99.733[MB/s], top speed: 99.863[MB/s], min speed: 50.799[MB/s]
+[000] = (102540[ns]  - 102640[ns]) 9744 values	******************************************************************************************************************************************************
+[004] = (102940[ns]  - 103040[ns]) 0227 values	***
+Running 10000 tests with 2560 words for 0x0
+read statistics: min: 113421.0[ns], max: 211001.0[ns], mean 114328.5[ns], median 113841.0[ns], deviation: 3358.7[ns]
+mean speed: 89.566[MB/s], top speed: 90.283[MB/s], min speed: 48.531[MB/s]
+[000] = (113421[ns]  - 113521[ns]) 9372 values	******************************************************************************************************************************************************
+[001] = (113521[ns]  - 113621[ns]) 0257 values	****
+[002] = (113621[ns]  - 113721[ns]) 0084 values	*
+[007] = (114121[ns]  - 114221[ns]) 0103 values	*

@@ -1,0 +1,29 @@
+Small test for 32 words
+[PROCESSOR] Running 10000 tests with 32 words
+[PROCESSOR] read statistics: min: 1410.0[ns], max: 12591.0[ns], mean 1417.4[ns], median 1410.0[ns], deviation: 174.0[ns]
+mean speed: 90.308[MB/s], top speed: 90.780[MB/s], min speed: 10.166[MB/s]
+[000] = (1410[ns]  - 1510[ns]) 9967 values	******************************************************************************************************************************************************
+Running 10000 tests with 32 words for 0xA1000000
+read statistics: min: 11851.0[ns], max: 261936.0[ns], mean 12521.7[ns], median 12272.0[ns], deviation: 5552.5[ns]
+mean speed: 10.222[MB/s], top speed: 10.801[MB/s], min speed: 0.489[MB/s]
+[000] = (11851[ns]  - 11951[ns]) 9927 values	******************************************************************************************************************************************************
+Running 10000 tests with 32 words for 0x1000000
+read statistics: min: 11831.0[ns], max: 327982.0[ns], mean 12512.3[ns], median 12262.0[ns], deviation: 5901.4[ns]
+mean speed: 10.230[MB/s], top speed: 10.819[MB/s], min speed: 0.390[MB/s]
+[000] = (11831[ns]  - 11931[ns]) 9958 values	******************************************************************************************************************************************************
+Big test for 1024 words
+[PROCESSOR] Running 10000 tests with 1024 words
+[PROCESSOR] read statistics: min: 41094.0[ns], max: 316601.0[ns], mean 41198.1[ns], median 41094.0[ns], deviation: 3390.6[ns]
+mean speed: 99.422[MB/s], top speed: 99.674[MB/s], min speed: 12.937[MB/s]
+[000] = (41094[ns]  - 41194[ns]) 9897 values	******************************************************************************************************************************************************
+[001] = (41194[ns]  - 41294[ns]) 0091 values	*
+Running 10000 tests with 1024 words for 0xA1000000
+read statistics: min: 51525.0[ns], max: 150595.0[ns], mean 52273.8[ns], median 51945.0[ns], deviation: 3651.3[ns]
+mean speed: 78.357[MB/s], top speed: 79.495[MB/s], min speed: 27.199[MB/s]
+[000] = (51525[ns]  - 51625[ns]) 9694 values	******************************************************************************************************************************************************
+[001] = (51625[ns]  - 51725[ns]) 0138 values	**
+Running 10000 tests with 1024 words for 0x1000000
+read statistics: min: 51595.0[ns], max: 123852.0[ns], mean 52301.0[ns], median 51955.0[ns], deviation: 3626.9[ns]
+mean speed: 78.316[MB/s], top speed: 79.388[MB/s], min speed: 33.072[MB/s]
+[000] = (51595[ns]  - 51695[ns]) 9576 values	******************************************************************************************************************************************************
+[001] = (51695[ns]  - 51795[ns]) 0217 values	***
