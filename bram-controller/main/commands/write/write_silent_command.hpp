@@ -5,7 +5,7 @@
 #ifndef BRAM_CONTROLLER_WRITE_COMMAND_APPLICATION_HPP
 #define BRAM_CONTROLLER_WRITE_COMMAND_APPLICATION_HPP
 
-
+#include <string.h>
 #include "write_command.hpp"
 
 class WriteSilentCommand : public WriteCommand {
@@ -21,9 +21,7 @@ private:
         } catch (const MemoryException &e) {
             return 1;
         }
-        for (int i = 0; i < numOfWordsToWrite; ++i) {
-            memory[i] = words.get()[i];
-        }
+        memcpy(memory, words.get(), numOfWordsToWrite * 4);
         closeMemory(memory);
         return 0;
     }

@@ -14,6 +14,8 @@ public:
     double min = 0.0;
     double max = 0.0;
     double speed = 0.0;
+    double topSpeed = 0.0;
+    double minSpeed = 0.0;
 private:
     double * times;
     ulong testSize;
@@ -35,12 +37,14 @@ public:
         mean = sum / testSize;
         median = times[testSize / 2];
         standardDeviation = std::sqrt(squareSum / testSize - mean * mean);
-        speed = (words * 32 * 10e3) / (mean * 8);
+        speed = (words * 32 * 1000) / (mean * 8);
+        topSpeed = (words * 32 * 1000) / (min * 8);
+        minSpeed = (words * 32 * 1000) / (max * 8);
     }
 
     void print() {
         printf("min: %.1f[ns], max: %.1f[ns], mean %.1f[ns], median %.1f[ns], deviation: %.1f[ns]\n", min, max, mean, median, standardDeviation);
-        printf("operation speed is: %.3f[MB/s]\n", speed);
+        printf("mean speed: %.3f[MB/s], top speed: %.3f[MB/s], min speed: %.3f[MB/s]\n", speed, topSpeed, minSpeed);
         printHistogram();
     }
 
