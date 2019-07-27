@@ -3,6 +3,12 @@ class FormControls {
         this.controls = [];
     }
 
+    getInput() {
+        const result = {};
+        this.controls.forEach(control => result[control.name] = control.value);
+        return result;
+    }
+
     get (controlName) {
         return this.controls.find(formControl => formControl.name === controlName);
     };
@@ -27,14 +33,18 @@ class FormControls {
     }
 
     checkValidity(control) {
+        let isValid = true;
         const errorControl = $(`#${control.errorDiv}`);
         if (!control.validationFunction(control.value)) {
+            isValid = false;
+            console.log(control);
             errorControl.css("display", "block");
             errorControl.html(control.errorMessage);
         } else {
             errorControl.css("display", "none");
             errorControl.html('');
         }
+        return isValid;
     }
 
     isValid() {

@@ -6,6 +6,7 @@ const dateType = {
 
 let newLayoutTextboxRadio;
 let newLayoutChartRadio;
+let layout = new Layout('inputsContainer');
 
 const newLayoutTextboxForm = new FormControls();
 const newLayoutChartForm = new FormControls();
@@ -25,7 +26,16 @@ $(document).ready(() => {
 
     newLayoutTextboxForm.add('name', '', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutTextboxItemNameInputError');
     newLayoutTextboxForm.add('address', '', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutTextboxAddressInputError');
-    newLayoutTextboxForm.add('words', '', (value) => value.match('^[1-9]\\d*$'), 'Please provide num of words (grater than 0)', 'newLayoutTextboxWordsInputError');
+    newLayoutTextboxForm.add(
+        'words',
+        '',
+        function (value) {
+            const type = this.getParentForm().getValue('dataType');
+            return (type === dateType.hex && value.match('^[1-9]\\d*$')) || (type === dateType.math || type === dateType.date)
+        },
+        'Please provide num of words (grater than 0)',
+        'newLayoutTextboxWordsInputError'
+    );
     newLayoutTextboxForm.add('dataType', '', (value) => !!value, 'Please chose data type', 'newLayoutTextboxDataTypeError');
     newLayoutTextboxForm.add(
         'formula',
@@ -57,16 +67,69 @@ $(document).ready(() => {
 });
 
 
-function onChangeDateType(form, value, label, formulaInputName, menuButton) {
+function onChangeDateTypeForInput(form, value, label, wordsInputName, formulaInputName, menuButton) {
     form.setValue('dataType', value);
-    form.checkValidity(form.get('formula'));
     const formula = $("#" + formulaInputName);
+    const words = $("#" + wordsInputName);
+    const readOnly = $('#newLayoutTextBoxReadOnly');
+
     $('#' + menuButton).html(label);
-    if (value === dateType.date || value === dateType.hex) {
+
+    if (value === dateType.hex) {
+        formula.attr("disabled", "");
+        words.removeAttr("disabled");
+        readOnly.removeAttr("disabled");
+    } else if (value === dateType.math) {
+        formula.removeAttr("disabled");
+        words.attr("disabled", "");
+        words.val(1);
+        form.setValue('words', '1');
+
+        readOnly.prop('checked', true);
+        readOnly.attr('disabled', '');
+        form.setValue('readOnly', true);
+    } else if (value === dateType.date) {
+        formula.attr("disabled", "");
+        words.attr("disabled", "");
+        words.val(1);
+        form.setValue('words', '1');
+
+        readOnly.prop('checked', true);
+        readOnly.attr('disabled', '');
+        form.setValue('readOnly', true);
+    }
+
+    form.checkValidity(form.get('formula'));
+    form.checkValidity(form.get('words'));
+
+}
+
+function newLayoutChangeReadOnly() {
+    newLayoutTextboxForm.setValue('readOnly', $('#newLayoutTextBoxReadOnly')[0].checked);
+}
+
+function onChangeDateTypeForChart(form, value, label, wordsInputName, formulaInputName, menuButton) {
+    form.setValue('dataType', value);
+    const formula = $("#" + formulaInputName);
+    const words = $("#" + wordsInputName);
+    $('#' + menuButton).html(label);
+
+    if (value === dateType.hex) {
         formula.attr("disabled", "");
     } else if (value === dateType.math) {
         formula.removeAttr("disabled");
+    } else if (value === dateType.math) {
+        formula.removeAttr("disabled");
     }
+    // if (value !== dateType.) {
+    //     words.attr("disabled", "");
+    // } else {
+    //     words.removeAttr("disabled");
+    // }
+
+    form.checkValidity(form.get('formula'));
+    form.checkValidity(form.get('words'));
+
 }
 
 function newLayoutOnChangeRadioButton(e) {
@@ -74,7 +137,6 @@ function newLayoutOnChangeRadioButton(e) {
     if (newLayoutTextboxRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").removeAttr("hidden");
         $("#newLayoutChartForm").attr("hidden", 'hidden');
-        // newItem = {name: '', address: -1, words: -1, type: null, formula: '', readOnly: false};
     } else if (newLayoutChartRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").attr("hidden", 'hidden');
         $("#newLayoutChartForm").removeAttr("hidden");
@@ -84,7 +146,11 @@ function newLayoutOnChangeRadioButton(e) {
 }
 
 function validateAndSave(form) {
-    form.validateAll();
+    if (form.isValid() === true) {
+        const input = form.getInput();
+        console.log(input);
+        layout.addNewInput(input);
+    }
 }
 
 function newLayoutValidate() {

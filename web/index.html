@@ -10,11 +10,16 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="scripts/form_controls.js"></script>
     <script src="scripts/navbar.js"></script>
+    <script src="scripts/layout_class.js"></script>
+    <script src="scripts/input_item.js"></script>
     <script src="scripts/new_layout_form.js"></script>
+
 </head>
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -96,12 +101,12 @@
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item"
-                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.date, 'Date', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Date</a>
+                           onclick="onChangeDateTypeForInput(newLayoutTextboxForm, dateType.date, 'Date', 'newLayoutTextboxWordsInput', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Date</a>
                         <a class="dropdown-item"
-                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.hex, 'Hexadecimal value', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Hexadecimal
+                           onclick="onChangeDateTypeForInput(newLayoutTextboxForm, dateType.hex, 'Hexadecimal value', 'newLayoutTextboxWordsInput', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Hexadecimal
                             value</a>
                         <a class="dropdown-item"
-                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.math, 'Mathematical formula', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Mathematical
+                           onclick="onChangeDateTypeForInput(newLayoutTextboxForm, dateType.math, 'Mathematical formula', 'newLayoutTextboxWordsInput', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Mathematical
                             formula</a>
                     </div>
                     <div id="newLayoutTextboxDataTypeError" class="invalid-tooltip"></div>
@@ -114,7 +119,7 @@
                 </div>
                 <div class="col-md-1" style="text-align: center">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="newLayoutTextBoxReadOnly">
+                        <input type="checkbox" class="custom-control-input" id="newLayoutTextBoxReadOnly" onchange="newLayoutChangeReadOnly()">
                         <label class="custom-control-label" for="newLayoutTextBoxReadOnly">Read only</label>
                     </div>
                 </div>
@@ -174,6 +179,114 @@
             </div>
         </div>
     </form>
+</div>
+<div class="text-center">
+    <div class="row alert alert-primary" style="margin-left: auto; margin-right: auto; cursor: pointer; width: 95%">
+        <div class="col-md-8 offset-md-2 text-center " role="alert" data-toggle="collapse" data-target="#charts" aria-expanded="false" aria-controls="charts">Charts</div>
+        <div class="col-md-2 text-right">
+            <i class="fa fa-arrow-down"></i>
+        </div>
+    </div>
+    <div id="charts" class="row collapse" style="margin-left: 10px; margin-right: 10px">
+        <div class="col">
+            <div class="row">
+                this is charts div
+            </div>
+        </div>
+    </div>
+
+    <div class="row alert alert-primary" style="margin-left: auto; margin-right: auto; cursor: pointer; width: 95%">
+        <div class="col-md-8 offset-md-2 text-center " role="alert" data-toggle="collapse" data-target="#inputs" aria-expanded="false" aria-controls="inputs">Inputs</div>
+        <div class="col-md-2 text-right">
+            <i class="fa fa-arrow-down"></i>
+        </div>
+    </div>
+    <div id="inputs" class="collapse" style="margin-left: 10px; margin-right: 10px">
+        <div id="inputsContainer" class="row row-eq-height" style="margin-left: 10px; margin-right: 10px">
+
+
+<!--            <div class="col-md-4 align-middle" style="height: 220px;">-->
+<!--                <div class="card border-light bg-light h-100 align-middle">-->
+<!--                    <div class="card-body">-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-8 offset-md-2 text-center">-->
+<!--                                <h5 class="card-title">Temperature Concentrator 1</h5>-->
+<!--                            </div>-->
+<!--                            <div class="col-md-2 text-right" style="cursor: pointer">-->
+<!--                                <span class="alert alert-danger"><i class="fa fa-times"></i></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-12">-->
+<!--                                <p class="card-subtitle text-left">Input for address: 0xFFAABBCC, num of words: 2</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row">-->
+<!--                            <div class="col-md-12">-->
+<!--                                <p class="card-subtitle text-left">Hexadecimal data type</p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row mt-4 align-item-center">-->
+<!--                            <div class="col-md-4">-->
+<!--                                <button class="btn btn-primary w-100">Get value</button>-->
+<!--                            </div>-->
+<!--                            <div class="col-md-8">-->
+<!--                                <label class="sr-only" for="newLayoutChartWordsInput"></label>-->
+<!--                                <input type="text" class="form-control" id="write_1" readonly>-->
+<!--                                <div id="write_1error" class="invalid-tooltip"></div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-md-4 h-100">-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title">Card title</h5>-->
+<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--                        <a href="#" class="card-link">Card link</a>-->
+<!--                        <a href="#" class="card-link">Another link</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="col-md-4">-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title">Card title</h5>-->
+<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--                        <a href="#" class="card-link">Card link</a>-->
+<!--                        <a href="#" class="card-link">Another link</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="col-md-4">-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title">Card title</h5>-->
+<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--                        <a href="#" class="card-link">Card link</a>-->
+<!--                        <a href="#" class="card-link">Another link</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="col-md-4">-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        <h5 class="card-title">Card title</h5>-->
+<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
+<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--                        <a href="#" class="card-link">Card link</a>-->
+<!--                        <a href="#" class="card-link">Another link</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
 </div>
 </body>
 </html>
