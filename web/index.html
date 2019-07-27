@@ -62,7 +62,7 @@
     </form>
     <h5 class="mt-2">Add new item</h5>
     <div class="form-row align-items-center">
-        <div class="col-md-1">Chose type:</div>
+        <div class="col-md-1">Choose type:</div>
         <div class="col-md-1">
             <div class="custom-control custom-radio">
                 <input type="radio" class="custom-control-input" id="newLayoutTextboxRadio" name="radio-stacked" required>
@@ -92,7 +92,7 @@
                 </div>
                 <div class="col-md-1">
                     <label class="sr-only" for="newLayoutTextboxWordsInput">Words</label>
-                    <input type="text" class="form-control" id="newLayoutTextboxWordsInput" placeholder="words" oninput="newLayoutTextboxForm.setValue('words', this.value)">
+                    <input type="text" class="form-control" id="newLayoutTextboxWordsInput" placeholder="words" oninput="newLayoutSetTextboxWordsChanged(this.value)">
                     <div id="newLayoutTextboxWordsInputError" class="invalid-tooltip"></div>
                 </div>
             </div>

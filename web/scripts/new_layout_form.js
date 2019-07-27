@@ -109,6 +109,17 @@ function newLayoutChangeReadOnly() {
     newLayoutTextboxForm.setValue('readOnly', $('#newLayoutTextBoxReadOnly')[0].checked);
 }
 
+function newLayoutSetTextboxWordsChanged(value) {
+    const readOnly = $('#newLayoutTextBoxReadOnly');
+    newLayoutTextboxForm.setValue('words', value);
+    if (newLayoutTextboxForm.getValue('dataType') === dateType.hex && newLayoutTextboxForm.getValue('words') !== '1') {
+        readOnly.prop('checked', true);
+        readOnly.attr('disabled', '');
+    } else {
+        readOnly.removeAttr('disabled', '');
+    }
+}
+
 function onChangeDateTypeForChart(form, value, label, wordsInputName, formulaInputName, menuButton) {
     form.setValue('dataType', value);
     const formula = $("#" + formulaInputName);
