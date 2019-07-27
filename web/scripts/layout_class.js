@@ -8,18 +8,49 @@ class Layout {
     }
 
     getWords(inputId) {
-        const input = this.inputs.find(i => i.id === inputId);
+        let input = this.inputs.find(i => i.id === inputId);
         if (!input) {
             return;
         }
-        wordService.get(input.item.address, input.item.words, (result) => {
-            console.log(result);
+        input = input.item;
+        wordService.get(input.address, input.words, (result) => {
             const nums = byteArrayToNumList(base64ToByteArray(result));
-            console.log(nums);
-            let hex = '0x';
-            nums.forEach(num => hex += num.toString(16).toUpperCase());
-            console.log(hex);
-            input.item.setValue(hex + "([" + nums.join(',') + "])");
+            if (input.type === dateType.hex) {
+                let hex = '0x';
+                nums.forEach(num => hex += num.toString(16).toUpperCase());
+                input.setValue(hex + "([" + nums.join(',') + "])");
+            } else if (input.type === dateType.date) {
+                const nums = byteArrayToNumList(base64ToByteArray(result));
+                if (nums.length !== 1) {
+                    console.log('date has to be 1 word!');
+                    return;
+                }
+                const dateInSeconds = nums[0];
+                console.log(dateInSeconds);
+                const h = Math.floor(dateInSeconds / 3600);
+                const m = Math.floor(dateInSeconds % 3600 / 60);
+                const s = Math.floor(dateInSeconds % 3600 % 60);
+                console.log(h);
+                console.log(m);
+                console.log(s);
+
+                const hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
+                const mDisplay = m > 0 ? m + (m === 1 ? " minute, " : " minutes, ") : "";
+                const sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
+                input.setValue(hDisplay + mDisplay + sDisplay);
+            } else if (input.type === dateType.math) {
+                const nums = byteArrayToNumList(base64ToByteArray(result));
+                if (nums.length !== 1) {
+                    console.log('date has to be 1 word!');
+                    return;
+                }
+                const dateInSeconds = nums[0];
+                console.log(dateInSeconds);
+                const mathEquation = math.parse(input.formula).compile();
+                let scope = {x: dateInSeconds};
+                input.setValue(mathEquation.evaluate(scope));
+            }
+
         });
     }
 
