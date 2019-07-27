@@ -12,8 +12,9 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
+    <script src="scripts/form_controls.js"></script>
     <script src="scripts/navbar.js"></script>
-    <script src="scripts/new-layout.js"></script>
+    <script src="scripts/new_layout_form.js"></script>
 </head>
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -51,88 +52,125 @@
             </div>
         </div>
     </form>
+    <h5 class="mt-2">Add new item</h5>
+    <div class="form-row align-items-center">
+        <div class="col-md-1">Chose type:</div>
+        <div class="col-md-1">
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="newLayoutTextboxRadio" name="radio-stacked" required>
+                <label class="custom-control-label" for="newLayoutTextboxRadio">Textbox</label>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="custom-control custom-radio ml-2">
+                <input type="radio" class="custom-control-input" id="newLayoutChartRadio" name="radio-stacked" required>
+                <label class="custom-control-label" for="newLayoutChartRadio">Chart</label>
+            </div>
+        </div>
+    </div>
     <form class="needs-validation" novalidate>
-        <h5 class="mt-2">Add new item</h5>
-        <div class="form-row align-items-center">
-            <div class="col-md-1">Chose type:</div>
-            <div class="col-md-1">
-                <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" id="newLayoutTextboxRadio" name="radio-stacked" required>
-                    <label class="custom-control-label" for="newLayoutTextboxRadio">Textbox</label>
+        <div id="newLayoutTextboxForm" hidden>
+            <div class="form-row align-items-center">
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutTextboxItemNameInput">Item name</label>
+                    <input type="text" class="form-control" id="newLayoutTextboxItemNameInput" placeholder="Item name" oninput="newLayoutTextboxForm.setValue('name', this.value)">
+                    <div id="newLayoutTextboxItemNameInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutTextboxAddressInput">Address</label>
+                    <input type="text" class="form-control" id="newLayoutTextboxAddressInput" placeholder="Hex address"
+                           oninput="newLayoutTextboxForm.setValue('address', this.value)">
+                    <div id="newLayoutTextboxAddressInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-1">
+                    <label class="sr-only" for="newLayoutTextboxWordsInput">Words</label>
+                    <input type="text" class="form-control" id="newLayoutTextboxWordsInput" placeholder="words" oninput="newLayoutTextboxForm.setValue('words', this.value)">
+                    <div id="newLayoutTextboxWordsInputError" class="invalid-tooltip"></div>
                 </div>
             </div>
-            <div class="col-md-1">
-                <div class="custom-control custom-radio ml-2">
-                    <input type="radio" class="custom-control-input" id="newLayoutChartRadio" name="radio-stacked" required>
-                    <label class="custom-control-label" for="newLayoutChartRadio">Chart</label>
+            <div class="form-row align-items-center mt-2">
+                <div class="col-md-2 dropdown">
+                    <button class="btn btn-warning dropdown-toggle w-100" type="button" id="newLayoutTextboxDataType" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                        Data type
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item"
+                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.date, 'Date', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Date</a>
+                        <a class="dropdown-item"
+                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.hex, 'Hexadecimal value', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Hexadecimal
+                            value</a>
+                        <a class="dropdown-item"
+                           onclick="onChangeDateType(newLayoutTextboxForm, dateType.math, 'Mathematical formula', 'newLayoutTextboxFormulaInput', 'newLayoutTextboxDataType')">Mathematical
+                            formula</a>
+                    </div>
+                    <div id="newLayoutTextboxDataTypeError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutTextboxFormulaInput">Formula</label>
+                    <input type="text" class="form-control" id="newLayoutTextboxFormulaInput" placeholder="Formula" oninput="newLayoutTextboxForm.setValue('formula', this.value)"
+                           disabled>
+                    <div id="newLayoutTextboxFormulaInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-1" style="text-align: center">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="newLayoutTextBoxReadOnly">
+                        <label class="custom-control-label" for="newLayoutTextBoxReadOnly">Read only</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn w-100 btn-primary" onclick="validateAndSave(newLayoutTextboxForm)">Add new textbox</button>
                 </div>
             </div>
         </div>
-        <div class="form-row align-items-center">
-            <div class="col-md-2">
-                <label class="sr-only" for="itemNameInput">Item name</label>
-                <input type="text" class="form-control" id="itemNameInput" placeholder="Item name" oninput="setNewItemValue('inputName', this.value);">
-                <div id="itemNameInputError" class="invalid-tooltip"></div>
-            </div>
-            <div class="col-md-2">
-                <label class="sr-only" for="addressInput">Address</label>
-                <input type="text" class="form-control" id="addressInput" placeholder="Hex address" oninput="setNewItemValue('address', this.value);">
-                <div id="addressInputError" class="invalid-tooltip"></div>
-            </div>
-            <div class="col-md-1">
-                <label class="sr-only" for="wordsInput">Words</label>
-                <input type="text" class="form-control" id="wordsInput" placeholder="words" oninput="setNewItemValue('words', this.value);">
-                <div id="wordsInputError" class="invalid-tooltip"></div>
-            </div>
-        </div>
-        <div id="newLayoutTextboxForm" class="form-row align-items-center mt-2" hidden>
-            <div class="col-md-2 dropdown" >
-                <button class="btn btn-warning dropdown-toggle w-100" type="button" id="newInputDateTypeMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Data type
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" onclick="onChangeDateType(dateType.date, 'Date', 'textboxFormulaInput')">Date</a>
-                    <a class="dropdown-item" onclick="onChangeDateType(dateType.hex, 'Hexadecimal value', 'textboxFormulaInput')">Hexadecimal value</a>
-                    <a class="dropdown-item" onclick="onChangeDateType(dateType.math, 'Mathematical formula', 'textboxFormulaInput')">Mathematical formula</a>
+    </form>
+    <form class="needs-validation" novalidate>
+        <div id="newLayoutChartForm" hidden>
+            <div class="form-row align-items-center">
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutChartItemNameInput">Item name</label>
+                    <input type="text" class="form-control" id="newLayoutChartItemNameInput" placeholder="Item name" oninput="newLayoutChartForm.setValue('name', this.value)">
+                    <div id="newLayoutChartItemNameInputError" class="invalid-tooltip"></div>
                 </div>
-                <div id="newInputDateTypeMenuError" class="invalid-tooltip"></div>
-            </div>
-            <div class="col-md-2">
-                <label class="sr-only" for="textboxFormulaInput">Formula</label>
-                <input type="text" class="form-control" id="textboxFormulaInput" placeholder="Formula" oninput="setNewItemValue('formula', this.value)" disabled>
-                <div id="textboxFormulaInputError" class="invalid-tooltip"></div>
-            </div>
-            <div class="col-md-1" style="text-align: center">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="newLayoutReadOnly">
-                    <label class="custom-control-label" for="newLayoutReadOnly">Read only</label>
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutChartAddressInput">Address</label>
+                    <input type="text" class="form-control" id="newLayoutChartAddressInput" placeholder="Hex address" oninput="newLayoutChartForm.setValue('address', this.value)">
+                    <div id="newLayoutChartAddressInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-1">
+                    <label class="sr-only" for="newLayoutChartWordsInput">Words</label>
+                    <input type="text" class="form-control" id="newLayoutChartWordsInput" placeholder="words" oninput="newLayoutChartForm.setValue('words', this.value)">
+                    <div id="newLayoutChartWordsInputError" class="invalid-tooltip"></div>
                 </div>
             </div>
-            <div class="col-md-2">
-                <button type="button" class="btn w-100 btn-primary" onclick="newLayoutValidateAndSaveTextBox()">Add new textbox</button>
-            </div>
-        </div>
-        <div id="newLayoutChartForm" class="form-row align-items-center mt-2" hidden>
-            <div class="col-md-1 dropdown">
-                <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="chartDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                    Data type
-                </button>
-                <div class="dropdown-menu" aria-labelledby="chartDropdownMenuButton">
-                    <a class="dropdown-item" href="#">Hexadecimal value</a>
-                    <a class="dropdown-item" href="#">Mathematical formula</a>
+            <div class="form-row align-items-center mt-2">
+                <div class="col-md-1 dropdown">
+                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="newLayoutChartDateType" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                        Data type
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="chartDropdownMenuButton">
+                        <a class="dropdown-item" onclick="onChangeDateType(newLayoutChartForm, dateType.hex, 'Hexadecimal value', 'chartFormulaInput', 'newLayoutChartDateType')">Hexadecimal
+                            value</a>
+                        <a class="dropdown-item"
+                           onclick="onChangeDateType(newLayoutChartForm, dateType.math, 'Mathematical formula', 'chartFormulaInput', 'newLayoutChartDateType')">Mathematical
+                            formula</a>
+                    </div>
+                    <div id="newLayoutChartDateTypeError" class="invalid-tooltip"></div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <label class="sr-only" for="chartFormulaInput">Formula</label>
-                <input type="text" class="form-control" id="chartFormulaInput" placeholder="Formula">
-            </div>
-            <div class="col-md-1">
-                <label class="sr-only" for="intervalInput">Interval</label>
-                <input type="text" class="form-control" id="intervalInput" placeholder="Interval">
-            </div>
-            <div class="col-md-2">
-                <button type="button" class="btn w-100 btn-primary">Add new chart</button>
+                <div class="col-md-2">
+                    <label class="sr-only" for="newLayoutChartFormulaInput">Formula</label>
+                    <input type="text" class="form-control" id="newLayoutChartFormulaInput" placeholder="Formula" oninput="newLayoutChartForm.setValue('formula', this.value)">
+                    <div id="newLayoutChartFormulaInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-1">
+                    <label class="sr-only" for="newLayoutChartIntervalInput">Interval</label>
+                    <input type="text" class="form-control" id="newLayoutChartIntervalInput" placeholder="Interval" oninput="newLayoutChartForm.setValue('interval', this.value)">
+                    <div id="newLayoutChartIntervalInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn w-100 btn-primary">Add new chart</button>
+                </div>
             </div>
         </div>
     </form>
