@@ -4,6 +4,7 @@ const dateType = {
     hex: 'hex'
 };
 
+let wordService = new WordsService();
 let newLayoutTextboxRadio;
 let newLayoutChartRadio;
 let layout = new Layout('inputsContainer');
@@ -24,11 +25,11 @@ $(document).ready(() => {
         newLayoutOnChangeRadioButton({target: newLayoutTextboxRadio});
     }
 
-    newLayoutTextboxForm.add('name', '', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutTextboxItemNameInputError');
-    newLayoutTextboxForm.add('address', '', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutTextboxAddressInputError');
+    newLayoutTextboxForm.add('name', 'Test', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutTextboxItemNameInputError');
+    newLayoutTextboxForm.add('address', '0xAABBCCDD', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutTextboxAddressInputError');
     newLayoutTextboxForm.add(
         'words',
-        '',
+        '4',
         function (value) {
             const type = this.getParentForm().getValue('dataType');
             return (type === dateType.hex && value.match('^[1-9]\\d*$')) || (type === dateType.math || type === dateType.date)
@@ -36,7 +37,7 @@ $(document).ready(() => {
         'Please provide num of words (grater than 0)',
         'newLayoutTextboxWordsInputError'
     );
-    newLayoutTextboxForm.add('dataType', '', (value) => !!value, 'Please chose data type', 'newLayoutTextboxDataTypeError');
+    newLayoutTextboxForm.add('dataType', 'hex', (value) => !!value, 'Please chose data type', 'newLayoutTextboxDataTypeError');
     newLayoutTextboxForm.add(
         'formula',
         '',

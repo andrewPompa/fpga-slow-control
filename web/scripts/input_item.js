@@ -7,6 +7,29 @@ class InputItem {
         this.address = '';
         this.words = -1;
         this.formula = '';
+        this.value = null;
+    }
+
+    setValue(text) {
+        $('#itemGetValue_' + this.id).val(text);
+    }
+
+    validate() {
+        let isValid = true;
+        const errorControl = $(`#inputSetValue_${this.id}Error`);
+        const value = $('#inputSetValue_' + this.id).val();
+        console.log(`^0x[A-Fa-f0-9]{1,${this.words * 8}}$`);
+        console.log(value);
+        if (value.match(`^0x[A-Fa-f0-9]{1,${this.words * 8}}$`)) {
+            this.value = value;
+            errorControl.css("display", "none");
+            errorControl.html('');
+        } else {
+            isValid = false;
+            errorControl.css("display", "block");
+            errorControl.html('Please insert valid hex value');
+        }
+        return isValid;
     }
 
     generate() {
@@ -73,7 +96,7 @@ class InputItemBuilder {
         this.card += `
         <div class="row mt-2">
             <div class="col-md-4">
-                <button class="btn btn-primary w-100">Get value</button>
+                <button class="btn btn-primary w-100" onclick="layout.getWords(${this.id})" >Get value</button>
             </div>
             <div class="col-md-8">
                 <label class="sr-only" for="itemGetValue_${this.id}"></label>
@@ -89,10 +112,10 @@ class InputItemBuilder {
             <div class="col-md-8">
                 <label class="sr-only" for="inputSetValue_${this.id}">Words</label>
                 <input type="text" class="form-control" id="inputSetValue_${this.id}" placeholder="words">
-                <div id="inputSetValue_${this.id}" class="invalid-tooltip"></div>
+                <div id="inputSetValue_${this.id}Error" class="invalid-tooltip"></div>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-primary w-100">Set value</button>
+                <button class="btn btn-primary w-100" onclick="layout.validateAndSendInput(${this.id})">Set value</button>
             </div>
         </div>`;
         return this;
