@@ -22,6 +22,7 @@
     <script src="scripts/layout_class.js"></script>
     <script src="scripts/input_item.js"></script>
     <script src="scripts/new_layout_form.js"></script>
+    <script src="scripts/new_chart_form.js"></script>
 
 </head>
 <header>
@@ -47,7 +48,7 @@
 </header>
 <body>
 <div class="jumbotron">
-    <h3>Configure</h3>
+    <h3>Configure Layout</h3>
     <form id="newLayoutForm" class="needs-validation" novalidate>
         <div class="form-row align-items-center">
             <div class="col-md-4">
@@ -55,8 +56,8 @@
                 <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Layout name">
                 <div class="invalid-feedback">Please provide item name</div>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn w-100 btn-primary mb-2">Submit</button>
+            <div class="col-md-1">
+                <button type="submit" class="btn w-100 btn-success mb-2">Persist <span><i class="fa fa-rocket"></i></span></button>
             </div>
         </div>
     </form>
@@ -98,9 +99,8 @@
             </div>
             <div class="form-row align-items-center mt-2">
                 <div class="col-md-2 dropdown">
-                    <button class="btn btn-warning dropdown-toggle w-100" type="button" id="newLayoutTextboxDataType" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                        Data type
+                    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="newLayoutTextboxDataType" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">Data type
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item"
@@ -126,12 +126,19 @@
                         <label class="custom-control-label" for="newLayoutTextBoxReadOnly">Read only</label>
                     </div>
                 </div>
+            </div>
+            <div class="form-row align-items-center mt-2">
                 <div class="col-md-2">
-                    <button type="button" class="btn w-100 btn-primary" onclick="validateAndSave(newLayoutTextboxForm)">Add new textbox</button>
+                    <button type="button" class="btn w-100 btn-success" onclick="validateAndSave(newLayoutTextboxForm)">Add new input <span><i
+                            class="fa fa-pencil-square-o"></i></span></button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn w-100 btn-secondary" onclick="clearNewLayoutTextboxForm()">Clear form <span><i class="fa fa-trash"></i></span></button>
                 </div>
             </div>
         </div>
     </form>
+
     <form class="needs-validation" novalidate>
         <div id="newLayoutChartForm" hidden>
             <div class="form-row align-items-center">
@@ -152,17 +159,20 @@
                 </div>
             </div>
             <div class="form-row align-items-center mt-2">
-                <div class="col-md-1 dropdown">
-                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="newLayoutChartDateType" data-toggle="dropdown" aria-haspopup="true"
+                <div class="col-md-2 dropdown">
+                    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="newLayoutChartDateType" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
                         Data type
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="chartDropdownMenuButton">
-                        <a class="dropdown-item" onclick="onChangeDateType(newLayoutChartForm, dateType.hex, 'Hexadecimal value', 'chartFormulaInput', 'newLayoutChartDateType')">Hexadecimal
-                            value</a>
+                    <div class="dropdown-menu">
                         <a class="dropdown-item"
-                           onclick="onChangeDateType(newLayoutChartForm, dateType.math, 'Mathematical formula', 'chartFormulaInput', 'newLayoutChartDateType')">Mathematical
-                            formula</a>
+                           onclick="onChangeDateTypeForChart(newLayoutChartForm, dateType.hex, 'Hexadecimal value', 'newLayoutChartFormulaInput', 'newLayoutChartDateType')">
+                            Hexadecimal value
+                        </a>
+                        <a class="dropdown-item"
+                           onclick="onChangeDateTypeForChart(newLayoutChartForm, dateType.math, 'Mathematical formula', 'newLayoutChartFormulaInput', 'newLayoutChartDateType')">
+                            Mathematical formula
+                        </a>
                     </div>
                     <div id="newLayoutChartDateTypeError" class="invalid-tooltip"></div>
                 </div>
@@ -176,8 +186,14 @@
                     <input type="text" class="form-control" id="newLayoutChartIntervalInput" placeholder="Interval" oninput="newLayoutChartForm.setValue('interval', this.value)">
                     <div id="newLayoutChartIntervalInputError" class="invalid-tooltip"></div>
                 </div>
+
+            </div>
+            <div class="form-row align-items-center mt-2">
                 <div class="col-md-2">
-                    <button type="button" class="btn w-100 btn-primary">Add new chart</button>
+                    <button type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAndSaveChart()">Add new chart <span><i class="fa fa-area-chart"></i></span></button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn w-100 btn-secondary" onclick="newLayoutClearChartForm()">Clear form <span><i class="fa fa-trash"></i></span></button>
                 </div>
             </div>
         </div>
@@ -206,88 +222,6 @@
     </div>
     <div id="inputs" class="collapse" style="margin-left: 10px; margin-right: 10px">
         <div id="inputsContainer" class="row row-eq-height" style="margin-left: 10px; margin-right: 10px">
-
-
-<!--            <div class="col-md-4 align-middle" style="height: 220px;">-->
-<!--                <div class="card border-light bg-light h-100 align-middle">-->
-<!--                    <div class="card-body">-->
-<!--                        <div class="row">-->
-<!--                            <div class="col-md-8 offset-md-2 text-center">-->
-<!--                                <h5 class="card-title">Temperature Concentrator 1</h5>-->
-<!--                            </div>-->
-<!--                            <div class="col-md-2 text-right" style="cursor: pointer">-->
-<!--                                <span class="alert alert-danger"><i class="fa fa-times"></i></span>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="row">-->
-<!--                            <div class="col-md-12">-->
-<!--                                <p class="card-subtitle text-left">Input for address: 0xFFAABBCC, num of words: 2</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="row">-->
-<!--                            <div class="col-md-12">-->
-<!--                                <p class="card-subtitle text-left">Hexadecimal data type</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="row mt-4 align-item-center">-->
-<!--                            <div class="col-md-4">-->
-<!--                                <button class="btn btn-primary w-100">Get value</button>-->
-<!--                            </div>-->
-<!--                            <div class="col-md-8">-->
-<!--                                <label class="sr-only" for="newLayoutChartWordsInput"></label>-->
-<!--                                <input type="text" class="form-control" id="write_1" readonly>-->
-<!--                                <div id="write_1error" class="invalid-tooltip"></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-md-4 h-100">-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title">Card title</h5>-->
-<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-<!--                        <a href="#" class="card-link">Card link</a>-->
-<!--                        <a href="#" class="card-link">Another link</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div class="col-md-4">-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title">Card title</h5>-->
-<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-<!--                        <a href="#" class="card-link">Card link</a>-->
-<!--                        <a href="#" class="card-link">Another link</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="col-md-4">-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title">Card title</h5>-->
-<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-<!--                        <a href="#" class="card-link">Card link</a>-->
-<!--                        <a href="#" class="card-link">Another link</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div class="col-md-4">-->
-<!--                <div class="card">-->
-<!--                    <div class="card-body">-->
-<!--                        <h5 class="card-title">Card title</h5>-->
-<!--                        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>-->
-<!--                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
-<!--                        <a href="#" class="card-link">Card link</a>-->
-<!--                        <a href="#" class="card-link">Another link</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@ class FormControls {
         this.controls = [];
     }
 
-    getInput() {
+    getValues() {
         const result = {};
         this.controls.forEach(control => result[control.name] = control.value);
         return result;
@@ -32,12 +32,18 @@ class FormControls {
         }
     }
 
+    setValueNoValidate(controlName, value) {
+        const c = this.get(controlName);
+        if (c) {
+            c.value = value;
+        }
+    }
+
     checkValidity(control) {
         let isValid = true;
         const errorControl = $(`#${control.errorDiv}`);
         if (!control.validationFunction(control.value)) {
             isValid = false;
-            console.log(control);
             errorControl.css("display", "block");
             errorControl.html(control.errorMessage);
         } else {
@@ -48,7 +54,9 @@ class FormControls {
     }
 
     isValid() {
-        return this.controls.every(control => this.checkValidity(control) === true);
+        let isValid = true;
+        this.controls.forEach(control => isValid = this.checkValidity(control) === false ? false : isValid);
+        return isValid;
     }
 
     validateAll() {

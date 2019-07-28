@@ -7,10 +7,10 @@ const dateType = {
 let wordService = new WordsService();
 let newLayoutTextboxRadio;
 let newLayoutChartRadio;
+
 let layout = new Layout('inputsContainer');
 
 const newLayoutTextboxForm = new FormControls();
-const newLayoutChartForm = new FormControls();
 
 $(document).ready(() => {
     $("input[type=radio][name=radio-stacked]").change(newLayoutOnChangeRadioButton);
@@ -32,7 +32,7 @@ $(document).ready(() => {
         '4',
         function (value) {
             const type = this.getParentForm().getValue('dataType');
-            return (type === dateType.hex && value.match('^[1-9]\\d*$')) || (type === dateType.math || type === dateType.date)
+            return !type || (type === dateType.hex && value.match('^[1-9]\\d*$')) || (type === dateType.math || type === dateType.date)
         },
         'Please provide num of words (grater than 0)',
         'newLayoutTextboxWordsInputError'
@@ -49,22 +49,6 @@ $(document).ready(() => {
         'newLayoutTextboxFormulaInputError'
     );
     newLayoutTextboxForm.add('readOnly', false, () => true, '', null);
-
-    newLayoutChartForm.add('name', '', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutChartItemNameInputError');
-    newLayoutChartForm.add('address', '', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutChartAddressInputError');
-    newLayoutChartForm.add('words', '', (value) => value.match('^[1-9]\\d*$'), 'Please provide num of words (grater than 0)', 'newLayoutChartWordsInputError');
-    newLayoutChartForm.add('dataType', '', (value) => !!value, 'Please chose data type', 'newLayoutChartDateTypeError');
-    newLayoutChartForm.add(
-        'formula',
-        '',
-        (value) => {
-            const v = this.getParentForm().getValue('dataType');
-            return (v === dateType.hex) || (v === dateType.math  && value.match('^.*x.*$'))
-        },
-        'Please provide formula which contains \'x\' variable',
-        'chartFormulaInputError'
-    );
-    newLayoutChartForm.add('interval', '', (value) => value.match("^\\d+$"), 'Please provide interval in millis', 'newLayoutChartIntervalInputError');
 });
 
 
@@ -105,6 +89,22 @@ function onChangeDateTypeForInput(form, value, label, wordsInputName, formulaInp
 
 }
 
+function clearNewLayoutTextboxForm() {
+    $('#newLayoutTextboxItemNameInput').val('');
+    $('#newLayoutTextboxAddressInput').val('');
+    $('#newLayoutTextboxWordsInput').val('');
+    $('#newLayoutTextboxDataType').html('Data type');
+    $('#newLayoutTextboxFormulaInput').val('');
+    $('#newLayoutTextBoxReadOnly').prop('checked', false);
+
+    newLayoutTextboxForm.setValueNoValidate('name', '');
+    newLayoutTextboxForm.setValueNoValidate('address', '');
+    newLayoutTextboxForm.setValueNoValidate('words', '');
+    newLayoutTextboxForm.setValueNoValidate('dataType', '');
+    newLayoutTextboxForm.setValueNoValidate('formula', '');
+    newLayoutTextboxForm.setValueNoValidate('readOnly', false);
+}
+
 function newLayoutChangeReadOnly() {
     newLayoutTextboxForm.setValue('readOnly', $('#newLayoutTextBoxReadOnly')[0].checked);
 }
@@ -118,30 +118,6 @@ function newLayoutSetTextboxWordsChanged(value) {
     } else {
         readOnly.removeAttr('disabled', '');
     }
-}
-
-function onChangeDateTypeForChart(form, value, label, wordsInputName, formulaInputName, menuButton) {
-    form.setValue('dataType', value);
-    const formula = $("#" + formulaInputName);
-    const words = $("#" + wordsInputName);
-    $('#' + menuButton).html(label);
-
-    if (value === dateType.hex) {
-        formula.attr("disabled", "");
-    } else if (value === dateType.math) {
-        formula.removeAttr("disabled");
-    } else if (value === dateType.math) {
-        formula.removeAttr("disabled");
-    }
-    // if (value !== dateType.) {
-    //     words.attr("disabled", "");
-    // } else {
-    //     words.removeAttr("disabled");
-    // }
-
-    form.checkValidity(form.get('formula'));
-    form.checkValidity(form.get('words'));
-
 }
 
 function newLayoutOnChangeRadioButton(e) {
@@ -159,11 +135,8 @@ function newLayoutOnChangeRadioButton(e) {
 
 function validateAndSave(form) {
     if (form.isValid() === true) {
-        const input = form.getInput();
+        const input = form.getValues();
         console.log(input);
         layout.addNewInput(input);
     }
-}
-
-function newLayoutValidate() {
 }

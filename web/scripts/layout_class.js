@@ -65,6 +65,10 @@ class Layout {
         }
     }
 
+    addNewChart(chartData) {
+
+    }
+
     addNewInput(input) {
         const inputItem = new InputItem();
         inputItem.id = this.inputCounter++;
