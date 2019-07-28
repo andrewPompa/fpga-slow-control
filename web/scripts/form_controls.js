@@ -24,11 +24,47 @@ class FormControls {
         });
     }
 
+    addList(name, value, validationFunction, errorMessage, errorDiv) {
+        this.controls.push({
+            name: name, value: value, validationFunction: validationFunction, errorMessage: errorMessage, errorDiv: errorDiv, getParentForm: () => (this), counter: 0
+        });
+    }
+
     setValue(controlName, value) {
         const c = this.get(controlName);
         if (c) {
             c.value = value;
             this.checkValidity(c);
+        }
+    }
+
+    pushToList(controlName, value) {
+        const c = this.get(controlName);
+        if (c) {
+            value.id = c.counter++;
+            c.value.push(value);
+        }
+    }
+
+    findInList(controlName, itemId) {
+        let list = this.get(controlName);
+        if (!list || !list.value || !list.value.length) {
+            return null;
+        }
+        list = list.value;
+        return list.find(item => item.id === itemId);
+    }
+
+    removeFromList(controlName, itemId) {
+        let list = this.get(controlName);
+        if (!list || !list.value || !list.value.length) {
+            return null;
+        }
+        list = list.value;
+        const itemIndex = list.findIndex(item => item.id === itemId);
+        console.log(itemIndex);
+        if (itemIndex !== -1) {
+            list.splice(itemIndex, 1);
         }
     }
 

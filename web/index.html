@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DJPET Slow Control</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/6.0.3/math.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
@@ -16,6 +17,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="scripts/utils.js"></script>
+    <script src="scripts/chart_item.js"></script>
     <script src="scripts/words_service.js"></script>
     <script src="scripts/form_controls.js"></script>
     <script src="scripts/navbar.js"></script>
@@ -142,55 +144,64 @@
     <form class="needs-validation" novalidate>
         <div id="newLayoutChartForm" hidden>
             <div class="form-row align-items-center">
-                <div class="col-md-2">
-                    <label class="sr-only" for="newLayoutChartItemNameInput">Item name</label>
-                    <input type="text" class="form-control" id="newLayoutChartItemNameInput" placeholder="Item name" oninput="newLayoutChartForm.setValue('name', this.value)">
-                    <div id="newLayoutChartItemNameInputError" class="invalid-tooltip"></div>
+                <div class="col-md-4">
+                    <label class="sr-only" for="newLayoutChartNameInput">Chart name</label>
+                    <input type="text" class="form-control" id="newLayoutChartNameInput" placeholder="Chart name" oninput="newLayoutChartForm.setValue('name', this.value)">
+                    <div id="newLayoutChartNameInputError" class="invalid-tooltip"></div>
                 </div>
                 <div class="col-md-2">
-                    <label class="sr-only" for="newLayoutChartAddressInput">Address</label>
-                    <input type="text" class="form-control" id="newLayoutChartAddressInput" placeholder="Hex address" oninput="newLayoutChartForm.setValue('address', this.value)">
-                    <div id="newLayoutChartAddressInputError" class="invalid-tooltip"></div>
-                </div>
-                <div class="col-md-1">
-                    <label class="sr-only" for="newLayoutChartWordsInput">Words</label>
-                    <input type="text" class="form-control" id="newLayoutChartWordsInput" placeholder="words" oninput="newLayoutChartForm.setValue('words', this.value)">
-                    <div id="newLayoutChartWordsInputError" class="invalid-tooltip"></div>
+                    <label class="sr-only" for="newLayoutChartIntervalInput">Interval</label>
+                    <input type="text" class="form-control" id="newLayoutChartIntervalInput" placeholder="Interval" oninput="newLayoutChartForm.setValue('interval', this.value)">
+                    <div id="newLayoutChartIntervalInputError" class="invalid-tooltip"></div>
                 </div>
             </div>
+            <div id="newLayoutSeriesContainer">
+            </div>
             <div class="form-row align-items-center mt-2">
+                <div class="col-md-1">
+                    <label class="sr-only" for="newLayoutChartAddSeriesNameInput">Series name</label>
+                    <input type="text" class="form-control" id="newLayoutChartAddSeriesNameInput" placeholder="Series name"
+                           oninput="newLayoutChartAddSeriesForm.setValue('name', this.value)">
+                    <div id="newLayoutChartAddSeriesNameInputError" class="invalid-tooltip"></div>
+                </div>
+                <div class="col-md-1">
+                    <label class="sr-only" for="newLayoutChartAddSeriesAddressInput">Address</label>
+                    <input type="text" class="form-control" id="newLayoutChartAddSeriesAddressInput" placeholder="Hex address"
+                           oninput="newLayoutChartAddSeriesForm.setValue('address', this.value)">
+                    <div id="newLayoutChartAddSeriesAddressInputError" class="invalid-tooltip"></div>
+                </div>
                 <div class="col-md-2 dropdown">
-                    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="newLayoutChartDateType" data-toggle="dropdown" aria-haspopup="true"
+                    <button class="btn btn-primary dropdown-toggle w-100" type="button" id="newLayoutChartAddSeriesDataType" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
                         Data type
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item"
-                           onclick="onChangeDateTypeForChart(newLayoutChartForm, dateType.hex, 'Hexadecimal value', 'newLayoutChartFormulaInput', 'newLayoutChartDateType')">
+                           onclick="onChangeDateTypeForChart(newLayoutChartAddSeriesForm, dateType.hex, 'Hexadecimal value', 'newLayoutChartAddSeriesFormulaInput', 'newLayoutChartAddSeriesDataType')">
                             Hexadecimal value
                         </a>
                         <a class="dropdown-item"
-                           onclick="onChangeDateTypeForChart(newLayoutChartForm, dateType.math, 'Mathematical formula', 'newLayoutChartFormulaInput', 'newLayoutChartDateType')">
+                           onclick="onChangeDateTypeForChart(newLayoutChartAddSeriesForm, dateType.math, 'Mathematical formula', 'newLayoutChartAddSeriesFormulaInput', 'newLayoutChartAddSeriesDataType')">
                             Mathematical formula
                         </a>
                     </div>
-                    <div id="newLayoutChartDateTypeError" class="invalid-tooltip"></div>
+                    <div id="newLayoutChartAddSeriesDataTypeError" class="invalid-tooltip"></div>
                 </div>
                 <div class="col-md-2">
-                    <label class="sr-only" for="newLayoutChartFormulaInput">Formula</label>
-                    <input type="text" class="form-control" id="newLayoutChartFormulaInput" placeholder="Formula" oninput="newLayoutChartForm.setValue('formula', this.value)">
-                    <div id="newLayoutChartFormulaInputError" class="invalid-tooltip"></div>
+                    <label class="sr-only" for="newLayoutChartAddSeriesFormulaInput">Formula</label>
+                    <input type="text" class="form-control" id="newLayoutChartAddSeriesFormulaInput" placeholder="Formula"
+                           oninput="newLayoutChartAddSeriesForm.setValue('formula', this.value)">
+                    <div id="newLayoutChartAddSeriesFormulaInputError" class="invalid-tooltip"></div>
                 </div>
                 <div class="col-md-1">
-                    <label class="sr-only" for="newLayoutChartIntervalInput">Interval</label>
-                    <input type="text" class="form-control" id="newLayoutChartIntervalInput" placeholder="Interval" oninput="newLayoutChartForm.setValue('interval', this.value)">
-                    <div id="newLayoutChartIntervalInputError" class="invalid-tooltip"></div>
+                    <button type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAddSeries()">Add series <span><i class="fa fa-check"></i></span></button>
                 </div>
-
             </div>
             <div class="form-row align-items-center mt-2">
                 <div class="col-md-2">
-                    <button type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAndSaveChart()">Add new chart <span><i class="fa fa-area-chart"></i></span></button>
+                    <button type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAndSaveChart()">Add new chart <span><i class="fa fa-area-chart"></i></span>
+                    </button>
+                    <div id="newLayoutChartChartSaveButtonError" class="invalid-tooltip"></div>
                 </div>
                 <div class="col-md-2">
                     <button type="button" class="btn w-100 btn-secondary" onclick="newLayoutClearChartForm()">Clear form <span><i class="fa fa-trash"></i></span></button>
@@ -209,7 +220,7 @@
     <div id="charts" class="row collapse" style="margin-left: 10px; margin-right: 10px">
         <div class="col">
             <div class="row">
-                this is charts div
+                <canvas id="myChart"></canvas>
             </div>
         </div>
     </div>

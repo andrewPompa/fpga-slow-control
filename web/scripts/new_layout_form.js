@@ -49,6 +49,9 @@ $(document).ready(() => {
         'newLayoutTextboxFormulaInputError'
     );
     newLayoutTextboxForm.add('readOnly', false, () => true, '', null);
+
+    const lalala = new ChartItem();
+    lalala.generate();
 });
 
 

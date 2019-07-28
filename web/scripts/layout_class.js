@@ -66,7 +66,7 @@ class Layout {
     }
 
     addNewChart(chartData) {
-
+        console.log(chartData);
     }
 
     addNewInput(input) {
