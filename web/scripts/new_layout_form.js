@@ -37,7 +37,7 @@ $(document).ready(() => {
         'Please provide num of words (grater than 0)',
         'newLayoutTextboxWordsInputError'
     );
-    newLayoutTextboxForm.add('dataType', 'hex', (value) => !!value, 'Please chose data type', 'newLayoutTextboxDataTypeError');
+    newLayoutTextboxForm.add('dataType', 'hex', (value) => !!value, 'Please choose data type', 'newLayoutTextboxDataTypeError');
     newLayoutTextboxForm.add(
         'formula',
         '',
@@ -50,8 +50,6 @@ $(document).ready(() => {
     );
     newLayoutTextboxForm.add('readOnly', false, () => true, '', null);
 
-    const lalala = new ChartItem();
-    lalala.generate();
 });
 
 
@@ -124,7 +122,6 @@ function newLayoutSetTextboxWordsChanged(value) {
 }
 
 function newLayoutOnChangeRadioButton(e) {
-    console.log(e.target.id);
     if (newLayoutTextboxRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").removeAttr("hidden");
         $("#newLayoutChartForm").attr("hidden", 'hidden');
@@ -139,7 +136,6 @@ function newLayoutOnChangeRadioButton(e) {
 function validateAndSave(form) {
     if (form.isValid() === true) {
         const input = form.getValues();
-        console.log(input);
         layout.addNewInput(input);
     }
 }

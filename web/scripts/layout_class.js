@@ -1,6 +1,7 @@
 class Layout {
     constructor(containerForInputsName) {
         this.inputCounter = 0;
+        this.chartCounter = 0;
         this.containerForInputsName = containerForInputsName;
         this.inputs = [];
         this.charts = [];
@@ -13,45 +14,13 @@ class Layout {
             return;
         }
         input = input.item;
-        wordService.get(input.address, input.words, (result) => {
-            const nums = byteArrayToNumList(base64ToByteArray(result));
-            if (input.type === dateType.hex) {
-                let hex = '0x';
-                nums.forEach(num => hex += num.toString(16).toUpperCase());
-                input.setValue(hex + "([" + nums.join(',') + "])");
-            } else if (input.type === dateType.date) {
-                const nums = byteArrayToNumList(base64ToByteArray(result));
-                if (nums.length !== 1) {
-                    console.log('date has to be 1 word!');
-                    return;
-                }
-                const dateInSeconds = nums[0];
-                console.log(dateInSeconds);
-                const h = Math.floor(dateInSeconds / 3600);
-                const m = Math.floor(dateInSeconds % 3600 / 60);
-                const s = Math.floor(dateInSeconds % 3600 % 60);
-                console.log(h);
-                console.log(m);
-                console.log(s);
-
-                const hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
-                const mDisplay = m > 0 ? m + (m === 1 ? " minute, " : " minutes, ") : "";
-                const sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
-                input.setValue(hDisplay + mDisplay + sDisplay);
-            } else if (input.type === dateType.math) {
-                const nums = byteArrayToNumList(base64ToByteArray(result));
-                if (nums.length !== 1) {
-                    console.log('date has to be 1 word!');
-                    return;
-                }
-                const dateInSeconds = nums[0];
-                console.log(dateInSeconds);
-                const mathEquation = math.parse(input.formula).compile();
-                let scope = {x: dateInSeconds};
-                input.setValue(mathEquation.evaluate(scope));
-            }
-
-        });
+        if (input.type === dateType.hex) {
+            wordService.getHex(input.address, input.words, (hex, nums) => input.setValue(hex + "([" + nums.join(',') + "])"));
+        } else if (input.type === dateType.date) {
+            wordService.getInt(input.address, (seconds) => input.setValue(secondsToHourMinutesSeconds(seconds)));
+        } else if (input.type === dateType.math) {
+            wordService.getMath(input.address, input.formula, (result) => input.setValue(result));
+        }
     }
 
     validateAndSendInput(inputId) {
@@ -67,6 +36,12 @@ class Layout {
 
     addNewChart(chartData) {
         console.log(chartData);
+        const id = this.chartCounter++;
+        const chartItem = new ChartItem(id, chartData.name, chartData.interval, chartData.series);
+        this.charts.push(chartItem);
+        const canvas = chartItem.buildCanvas();
+        $('#chartsContainer').append(canvas);
+        chartItem.buildChart();
     }
 
     addNewInput(input) {
@@ -78,13 +53,12 @@ class Layout {
         inputItem.type = input.dataType;
         inputItem.readOnly = input.readOnly;
         inputItem.formula = input.formula;
-        console.log(this.inputs.length);
         this.inputs.push({id: inputItem.id, item: inputItem});
         $('#' + this.containerForInputsName).append(inputItem.generate());
     }
 
     removeInput(id) {
-        if (!confirm('Are you sure you want to save this thing into the database?')) {
+        if (!confirm('Are you sure to remove that input?')) {
             return;
         }
         const inputIndex = this.inputs.findIndex(i => i.id === id);

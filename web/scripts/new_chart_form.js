@@ -21,7 +21,7 @@ $(document).ready(() => {
         'newLayoutChartAddSeriesNameInputError'
     );
     newLayoutChartAddSeriesForm.add('address', '', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutChartAddSeriesAddressInputError');
-    newLayoutChartAddSeriesForm.add('dataType', '', (value) => !!value, 'Please chose data type', 'newLayoutChartAddSeriesDataTypeError');
+    newLayoutChartAddSeriesForm.add('dataType', '', (value) => !!value, 'Please choose data type', 'newLayoutChartAddSeriesDataTypeError');
     newLayoutChartAddSeriesForm.add(
         'formula',
         '',
@@ -44,6 +44,7 @@ function newLayoutClearChartForm() {
     $('#newLayoutChartAddSeriesAddressInput').val('');
     $('#newLayoutChartAddSeriesDataType').html('Data type');
     $('#newLayoutChartAddSeriesFormulaInput').val('');
+    $("#newLayoutSeriesContainer").html('');
 
 
     newLayoutChartForm.setValueNoValidate('name', '');
@@ -95,6 +96,7 @@ function newLayoutValidateAndSaveChart() {
     if (newLayoutChartForm.isValid() === true) {
         const chartData = newLayoutChartForm.getValues();
         layout.addNewChart(chartData);
+        newLayoutClearChartForm();
     }
 }
 
