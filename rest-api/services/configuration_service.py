@@ -89,4 +89,5 @@ class ConfigurationService(object):
         os.remove(self.configuration_file_directory + "/" + configuration)
 
     def create_directory_in_configuration_path(self, directory_path):
-        os.mkdir(self.configuration_file_directory + directory_path)
+        if not os.path.exists(self.configuration_file_directory + directory_path):
+            os.mkdir(self.configuration_file_directory + directory_path)
