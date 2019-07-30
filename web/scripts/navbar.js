@@ -5,14 +5,13 @@ let newLayoutChartRadio;
 let newLayout = new FormControls();
 let layout = new Layout();
 let persistedLayout = null;
-let selectLayout;
 let currentDataButton;
+let historicalLayoutConfigurer = new HistoricalLayoutConfigurer();
+let historicConfigurationService = new HistoricConfigurationService();
 
 $(document).ready(() => {
-    selectLayout = $('#selectForm');
     currentDataButton = $('#currentDataButton');
     currentDataButton.click();
-    layoutInfoListAll();
     resetCurrentLayout();
 });
 
@@ -40,14 +39,16 @@ function loadLayout(uuid) {
         persistedLayout = new Layout();
         persistedLayout.uuid = uuid;
         persistedLayout.name = configuration.name;
-        configuration.controls.inputs.forEach(input => persistedLayout.addNewInput(input));
-        configuration.controls.charts.forEach(chart => persistedLayout.addNewChart(chart));
 
         layout.uuid = uuid;
         layout.name = configuration.name;
         layoutSetName(configuration.name);
         configuration.controls.inputs.forEach(input => layout.addNewInput(input));
         configuration.controls.charts.forEach(chart => layout.addNewChart(chart));
+
+        persistedLayout.inputs = [...layout.inputs];
+        persistedLayout.charts = [...layout.charts];
+        console.log(persistedLayout);
     });
     console.log('loading layout' + uuid);
 }
@@ -67,43 +68,49 @@ function removeLayout(uuid) {
 
 function onClickCurrentDataButton() {
     $('#historicalDataButton').removeClass("active");
+    $('#activeLayoutViewContainer').removeAttr('hidden');
     currentDataButton.addClass("active");
-    selectLayout.removeAttr('hidden');
+    // layoutInfoListAll();
 
-    const currentLayouts = getCurrentLayouts();
-    if (currentLayouts.length !== 0) {
-        generateOptions(currentLayouts);
-    } else {
-        selectLayout.attr('hidden', 'hidden');
-    }
 }
 
 function onClickHistoricalDataButton() {
+    if (isActiveLayoutChanged()) {
+        if (!confirm('Edited layout is changed, would you like to update it?')) {
+            return;
+        }
+        validateAndSaveLayout();
+    }
+    resetCurrentLayout();
     currentDataButton.removeClass("active");
     $('#historicalDataButton').addClass("active");
+    $('#activeLayoutViewContainer').attr('hidden', '');
+    historicalLayoutConfigurer.start();
+
+
 }
 
 function onAddNewLayout() {
-    const layoutObject = {name: newLayout.getValue('name'), controls: {inputs: layout.getInputs(), charts: layout.getCharts()}};
-    const persistedLayoutObject = {name: persistedLayout.name, controls: {inputs: persistedLayout.getInputs(), charts: persistedLayout.getCharts()}};
-    if (layout.uuid && JSON.stringify(layoutObject) !== JSON.stringify(persistedLayoutObject)) {
-        new Toast('warning', 'Edited layout is changed, save it first').show();
-        return;
+    if (isActiveLayoutChanged()) {
+        if (!confirm('Edited layout is changed, would you like to update it?')) {
+            return;
+        }
+        validateAndSaveLayout();
     }
     resetCurrentLayout();
 }
 
-function getCurrentLayouts() {
-    return [];
+function isActiveLayoutChanged() {
+    const layoutObject = {name: newLayout.getValue('name'), controls: {inputs: layout.getInputs(), charts: layout.getCharts()}};
+    if (!persistedLayout && layoutObject.name === '' && layoutObject.controls.inputs.length === 0 && layoutObject.controls.charts.length === 0) {
+        return false;
+    } else if (!persistedLayout) {
+        return true;
+    }
+    const persistedLayoutObject = {name: persistedLayout.name, controls: {inputs: persistedLayout.getInputs(), charts: persistedLayout.getCharts()}};
+    return layout.uuid && JSON.stringify(layoutObject) !== JSON.stringify(persistedLayoutObject);
 }
 
-function generateOptions(layouts) {
-    let options = "";
-    layouts.forEach(layout => {
-        options += `<option value="${layout.uuid}">${layout.name}(${layout.creationTime})</option>`;
-    });
-    $('#layoutSelect').html(options);
-}
 
 function layoutInfoToHtml(configuration) {
     return `<div class="card border-light bg-light h-100 mb-2" style="width: 20rem; cursor: pointer">

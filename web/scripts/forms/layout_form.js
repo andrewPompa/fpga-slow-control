@@ -9,7 +9,7 @@ $(document).ready(function () {
     newLayout.addList(
         'controls',
         [],
-        () => {console.log(layout); return (layout.inputs && layout.inputs.length >= 1) || (layout.charts && layout.charts.length >= 1)},
+        () => (layout.inputs && layout.inputs.length >= 1) || (layout.charts && layout.charts.length >= 1),
         'Please add some items to layout',
         'invalidLayoutError'
     );
