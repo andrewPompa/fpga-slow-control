@@ -15,7 +15,7 @@ class HistoricDataFileWriter(object):
         while True:
             row = self.to_save_queue.get()
             with open(self.historic_data_directory + row['file'], "a+") as f:
-                f.write(row['time'] + '_' + row['word'] + ',')
+                f.write(row['value'] + ',')
             self.to_save_queue.task_done()
 
     def add(self, sth):

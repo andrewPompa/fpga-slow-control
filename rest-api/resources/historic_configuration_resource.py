@@ -6,7 +6,9 @@ import datetime
 
 
 class HistoricConfigurationResource(object):
-    def __init__(self, historic_configuration_service, configuration_cache):
+    def __init__(self, historic_configuration_service, configuration_cache, inactive_historic_configuration_service, historic_data_service):
+        self.historic_data_service = historic_data_service
+        self.inactive_historic_configuration_service = inactive_historic_configuration_service
         self.historic_configuration_service = historic_configuration_service
         self.historic_configuration_service.create_directory_in_configuration_path("/inactive")
         self.configuration_cache = configuration_cache
@@ -43,7 +45,7 @@ class HistoricConfigurationResource(object):
             self.historic_configuration_service.save_file(file_id, now, json_configuration)
             resp.data = json.dumps({"uuid": str(file_id)})
             resp.status = falcon.HTTP_201
-            self.configuration_cache.load_cache()
+            self.configuration_cache.reload()
         except OSError:
             resp.data = json.dumps({"error": 'cannot open folder with configurations'})
             resp.status = falcon.HTTP_500
@@ -69,13 +71,17 @@ class HistoricConfigurationResource(object):
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         inactive_name = configuration.split('.')[0] + '_' + now + '.json'
         self.historic_configuration_service.move_to_subdirectory(configuration, 'inactive', inactive_name)
-        self.configuration_cache.load_cache()
+        self.configuration_cache.reload()
         resp.status = falcon.HTTP_200
 
-
-def on_delete(self, req, resp, uuid_value):
-    if self.historic_configuration_service.is_file_exists(uuid_value) is False:
+    def on_delete(self, req, resp, uuid_value):
+        if self.historic_configuration_service.is_file_exists(uuid_value) is True:
+            self.historic_configuration_service.delete_file(uuid_value)
+            self.configuration_cache.reload()
+            self.historic_data_service.remove_all(uuid_value)
+            return
+        if self.inactive_historic_configuration_service.is_file_exists(uuid_value) is True:
+            self.inactive_historic_configuration_service.delete_file(uuid_value)
+            self.historic_data_service.remove_all(uuid_value)
+            return
         resp.status = falcon.HTTP_404
-        return
-    self.historic_configuration_service.delete_file(uuid_value)
-    self.configuration_cache.load_cache()

@@ -11,16 +11,34 @@ class ConfigurationCache(object):
     def load_cache(self):
         self.mutex.acquire()
         try:
-            configurations = self.historic_data_service.find_valid_files()
-            self.cache = {}
-            for configuration in configurations:
-                conf_json = self.historic_data_service.get_json_by_uuid(configuration)
-                for chart in conf_json['charts']:
-                    for series in chart['series']:
-                        file_name = configuration.split('.')[0] + '_' + str(chart['id']) + '_' + str(series['id']) + '.dat'
-                        now = datetime.datetime.now()
-                        data = {'address': int(series['address'], 16), 'interval': int(chart['interval']), 'next_execution_time': now}
-                        self.cache[file_name] = data
+            self.cache = self.create_cache()
+        finally:
+            self.mutex.release()
+
+    def create_cache(self):
+        configurations = self.historic_data_service.find_valid_files()
+        cache = {}
+        for configuration in configurations:
+            conf_json = self.historic_data_service.get_json_by_uuid(configuration)
+            now = datetime.datetime.now()
+            for chart in conf_json['charts']:
+                file_name = configuration.split('_')[0] + '_' + str(chart['id']) + '_timeline.dat'
+                data = {'type': 'timeline', 'interval': int(chart['interval']), 'next_execution_time': now}
+                cache[file_name] = data
+                for series in chart['series']:
+                    file_name = configuration.split('_')[0] + '_' + str(chart['id']) + '_' + str(series['id']) + '.dat'
+                    data = {'type': 'value', 'address': int(series['address'], 16), 'interval': int(chart['interval']), 'next_execution_time': now}
+                    cache[file_name] = data
+        return cache
+
+    def reload(self):
+        new_cache = self.create_cache()
+        self.mutex.acquire()
+        try:
+            for key in new_cache:
+                if key in self.cache:
+                    new_cache[key] = self.cache[key]
+            self.cache = new_cache
         finally:
             self.mutex.release()
 
