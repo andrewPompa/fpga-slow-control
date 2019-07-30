@@ -1,11 +1,11 @@
 class Layout {
-    constructor(containerForInputsName) {
+    constructor() {
         this.inputCounter = 0;
         this.chartCounter = 0;
-        this.containerForInputsName = containerForInputsName;
         this.inputs = [];
         this.charts = [];
         this.name = '';
+        this.uuid = null;
     }
 
     getWords(inputId) {
@@ -21,6 +21,15 @@ class Layout {
         } else if (input.type === dateType.math) {
             wordService.getMath(input.address, input.formula, (result) => input.setValue(result));
         }
+    }
+
+
+    getInputs() {
+        return this.inputs.map(input => input.item.valueForConfiguration());
+    }
+
+    getCharts() {
+        return this.charts.map(chart => chart.valueForConfiguration());
     }
 
     validateAndSendInput(inputId) {
@@ -45,6 +54,7 @@ class Layout {
     }
 
     addNewInput(input) {
+        console.log(input);
         const inputItem = new InputItem();
         inputItem.id = this.inputCounter++;
         inputItem.name = input.name;
@@ -54,7 +64,7 @@ class Layout {
         inputItem.readOnly = input.readOnly;
         inputItem.formula = input.formula;
         this.inputs.push({id: inputItem.id, item: inputItem});
-        $('#' + this.containerForInputsName).append(inputItem.generate());
+        $('#inputsContainer').append(inputItem.generate());
     }
 
     removeInput(id) {

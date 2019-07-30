@@ -10,6 +10,18 @@ class InputItem {
         this.value = null;
     }
 
+    valueForConfiguration() {
+        return {
+            id: this.id,
+            name: this.name,
+            type: this.type,
+            readOnly: this.readOnly,
+            address: this.address,
+            words: this.words,
+            formula: this.formula
+        };
+    }
+
     setValue(text) {
         $('#itemGetValue_' + this.id).val(text);
     }

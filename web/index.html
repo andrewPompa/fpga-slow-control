@@ -17,14 +17,16 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="scripts/utils.js"></script>
-    <script src="scripts/chart_item.js"></script>
     <script src="scripts/words_service.js"></script>
-    <script src="scripts/form_controls.js"></script>
+    <script src="scripts/configuration_service.js"></script>
+    <script src="scripts/models/form_controls.js"></script>
+    <script src="scripts/models/layout_class.js"></script>
+    <script src="scripts/models/chart_item.js"></script>
+    <script src="scripts/models/input_item.js"></script>
     <script src="scripts/navbar.js"></script>
-    <script src="scripts/layout_class.js"></script>
-    <script src="scripts/input_item.js"></script>
-    <script src="scripts/new_layout_form.js"></script>
-    <script src="scripts/new_chart_form.js"></script>
+    <script src="scripts/forms/layout_form.js"></script>
+    <script src="scripts/forms/new_chart_form.js"></script>
+    <script src="scripts/forms/new_textbox_form.js"></script>
 
 </head>
 <header>
@@ -39,13 +41,14 @@
                 <button id="historicalDataButton" class="nav-link btn btn-outline-primary" onclick="onClickHistoricalDataButton()">Historical data</button>
             </li>
         </ul>
+        <div class="dropleft mr-2">
+            <button class="nav-link btn btn-outline-primary dropdown-toggle" type="button" id="layoutsDropdown" data-toggle="dropdown">
+                Select layout
+            </button>
+            <div id="layoutInfos" class="dropdown-menu" aria-labelledby="layoutsDropdown">
+            </div>
+        </div>
         <button id="addNewLayout" class="nav-link btn btn-outline-success mr-2" onclick="onAddNewLayout()">Add new layout</button>
-        <form id="selectForm" class="form-inline my-2 my-lg-0">
-            <select id="layoutSelect" class="form-control form-control-md custom-select" onchange="onChangeLayoutSelect(this)">
-                <option>[Select layout...]</option>
-                <option>Add new layout</option>
-            </select>
-        </form>
     </nav>
 </header>
 <body>
@@ -53,13 +56,14 @@
     <h3>Configure Layout</h3>
     <form id="newLayoutForm" class="needs-validation" novalidate>
         <div class="form-row align-items-center">
-            <div class="col-xl-4">
-                <label class="sr-only" for="inlineFormInput">Name</label>
-                <input type="text" class="form-control mb-2" id="inlineFormInput" placeholder="Layout name">
-                <div class="invalid-feedback">Please provide item name</div>
+            <div class="col-xl-3">
+                <label class="sr-only" for="layoutNameInput">Name</label>
+                <input type="text" class="form-control mb-2" id="layoutNameInput" placeholder="Layout name" oninput="newLayout.setValue('name', this.value)">
+                <div id="layoutNameInputError" class="invalid-tooltip">Please provide item name</div>
             </div>
-            <div class="col-xl-1">
-                <button type="submit" class="btn w-100 btn-success mb-2">Persist <span><i class="fa fa-rocket"></i></span></button>
+            <div class="col-xl-2">
+                <button type="button" class="btn w-100 btn-success mb-2" onclick="validateAndSaveLayout()">Persist <span><i class="fa fa-rocket"></i></span></button>
+                <div id="invalidLayoutError" class="invalid-tooltip">Add some input or chart to save</div>
             </div>
         </div>
     </form>

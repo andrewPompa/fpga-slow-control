@@ -44,7 +44,6 @@ function newLayoutClearChartForm() {
     $('#newLayoutChartAddSeriesAddressInput').val('');
     $('#newLayoutChartAddSeriesDataType').html('Data type');
     $('#newLayoutChartAddSeriesFormulaInput').val('');
-    $("#newLayoutSeriesContainer").html('');
 
 
     newLayoutChartForm.setValueNoValidate('name', '');
@@ -55,6 +54,10 @@ function newLayoutClearChartForm() {
     newLayoutChartAddSeriesForm.setValueNoValidate('address', '');
     newLayoutChartAddSeriesForm.setValueNoValidate('dataType', '');
     newLayoutChartAddSeriesForm.setValueNoValidate('formula', '');
+
+
+    $('#newLayoutSeriesContainer').html('');
+    $('#chartsContainer').html('');
 
 }
 

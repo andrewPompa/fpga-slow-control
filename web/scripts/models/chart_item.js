@@ -15,6 +15,15 @@ class ChartItem {
         `;
     }
 
+    valueForConfiguration() {
+        return {
+            id: this.id,
+            name: this.name,
+            interval: this.interval,
+            series: this.dataSets,
+        };
+    }
+
     buildChart() {
         const ctx = $(`#chart_${this.id}`)[0].getContext('2d');
         const datasets = this.dataSets.map(dataset => {
@@ -39,7 +48,7 @@ class ChartItem {
                 title: {display: true, text: this.name}
             }
         });
-        setInterval(() => this.tickFunction(), this.interval);
+        this.intervalId = setInterval(() => this.tickFunction(), this.interval);
     }
 
     tickFunction() {
@@ -61,6 +70,10 @@ class ChartItem {
         console.log(dataset);
         dataset.data.push(value);
         this.chart.update();
+    }
+
+    removeInterval() {
+        clearInterval(this.intervalId);
     }
 
 }

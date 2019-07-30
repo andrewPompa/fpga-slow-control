@@ -25,7 +25,7 @@ class ConfigurationListResource(object):
         resp.status = falcon.HTTP_200
 
     def map_to_configuration_info(self, configuration):
-        with open(configuration, 'r') as f:
-            conf_json = json.loads(f)
-        return {"uuid": configuration.split("_")[0], "creation_date": configuration.split[1], "name": conf_json["name"]}
+        print configuration
+        conf_json = self.file_name_service.get_file_by_uuid(configuration)
+        return {"uuid": configuration.split("_")[0], "creationDate": configuration.split("_")[1].split('.')[0], "name": conf_json['name']}
 
