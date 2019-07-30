@@ -13,7 +13,14 @@ $(document).ready(function () {
         'Please add some items to layout',
         'invalidLayoutError'
     );
+    layoutReset();
 });
+
+function layoutSetName(name)  {
+    newLayout.setValue('name', name);
+    $('#layoutNameInput').val(name);
+
+}
 
 function layoutReset() {
     $('#layoutNameInput').val('');
@@ -28,6 +35,16 @@ function layoutReset() {
 function validateAndSaveLayout() {
     if (newLayout.isValid()) {
         const layoutObject = {name: newLayout.getValue('name'), controls: {inputs: layout.getInputs(), charts: layout.getCharts()}};
-        configurationService.post(layoutObject, (result) => layoutInfoListAll());
+        if (layout.uuid) {
+            configurationService.put(layout.uuid, layoutObject, () => {
+                new Toast('success', 'Layout updated').show();
+                layoutInfoListAll();
+            });
+        } else {
+            configurationService.post(layoutObject, () => {
+                new Toast('success', 'Layout created').show();
+                layoutInfoListAll();
+            });
+        }
     }
 }

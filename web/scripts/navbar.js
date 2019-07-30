@@ -4,16 +4,16 @@ let newLayoutTextboxRadio;
 let newLayoutChartRadio;
 let newLayout = new FormControls();
 let layout = new Layout();
-
+let persistedLayout = null;
 let selectLayout;
 let currentDataButton;
-let currentLayouts = [];
 
 $(document).ready(() => {
     selectLayout = $('#selectForm');
     currentDataButton = $('#currentDataButton');
     currentDataButton.click();
     layoutInfoListAll();
+    resetCurrentLayout();
 });
 
 function resetCurrentLayout() {
@@ -37,8 +37,15 @@ function layoutInfoListAll() {
 function loadLayout(uuid) {
     configurationService.get(uuid, (configuration) => {
         resetCurrentLayout();
+        persistedLayout = new Layout();
+        persistedLayout.uuid = uuid;
+        persistedLayout.name = configuration.name;
+        configuration.controls.inputs.forEach(input => persistedLayout.addNewInput(input));
+        configuration.controls.charts.forEach(chart => persistedLayout.addNewChart(chart));
+
         layout.uuid = uuid;
         layout.name = configuration.name;
+        layoutSetName(configuration.name);
         configuration.controls.inputs.forEach(input => layout.addNewInput(input));
         configuration.controls.charts.forEach(chart => layout.addNewChart(chart));
     });
@@ -51,7 +58,9 @@ function removeLayout(uuid) {
         return;
     }
     configurationService.remove(uuid, () => {
-        layoutInfoListAll()
+        new Toast('info', 'Layout deleted').show();
+        resetCurrentLayout();
+        layoutInfoListAll();
     });
 }
 
@@ -75,7 +84,13 @@ function onClickHistoricalDataButton() {
 }
 
 function onAddNewLayout() {
-
+    const layoutObject = {name: newLayout.getValue('name'), controls: {inputs: layout.getInputs(), charts: layout.getCharts()}};
+    const persistedLayoutObject = {name: persistedLayout.name, controls: {inputs: persistedLayout.getInputs(), charts: persistedLayout.getCharts()}};
+    if (layout.uuid && JSON.stringify(layoutObject) !== JSON.stringify(persistedLayoutObject)) {
+        new Toast('warning', 'Edited layout is changed, save it first').show();
+        return;
+    }
+    resetCurrentLayout();
 }
 
 function getCurrentLayouts() {

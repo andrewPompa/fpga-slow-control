@@ -12,6 +12,17 @@ class ConfigurationService {
         $.ajax(ajax);
     }
 
+    put(uuid, configuration, onSuccess) {
+        const ajax = {};
+        ajax.type = "PUT";
+        ajax.url = `/configuration/${uuid}`;
+        ajax.contentType = "application/json";
+        ajax.dataType = "json";
+        ajax.data = JSON.stringify(configuration);
+        ajax.success = onSuccess;
+        $.ajax(ajax);
+    }
+
     get(uuid, onSuccess) {
         const ajax = {};
         ajax.type = "GET";

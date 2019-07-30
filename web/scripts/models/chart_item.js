@@ -52,8 +52,6 @@ class ChartItem {
     }
 
     tickFunction() {
-        console.log(this);
-        console.log(this.chart.data.datasets);
         this.chart.data.labels.push(currentTimeInMillis());
         this.chart.data.datasets.forEach(dataset => {
             if (dataset.dataType === dateType.hex) {
@@ -67,7 +65,6 @@ class ChartItem {
     }
 
     addData(value, dataset) {
-        console.log(dataset);
         dataset.data.push(value);
         this.chart.update();
     }
