@@ -1,3 +1,5 @@
+import os
+
 import falcon
 import json
 import datetime
@@ -17,7 +19,7 @@ class HistoricConfigurationResource(object):
     def on_get(self, req, resp, uuid_value):
         resp.content_type = "application/json"
         try:
-            json_configuration = self.historic_configuration_service.get_file_by_uuid(uuid_value)
+            json_configuration = self.historic_configuration_service.get_json_by_uuid(uuid_value)
         except OSError:
             resp.data = json.dumps({"error": 'cannot open folder with configurations'})
             resp.status = falcon.HTTP_500
@@ -52,9 +54,28 @@ class HistoricConfigurationResource(object):
             resp.data = json.dumps({"error": 'invalid name: ' + json_configuration["name"]})
             resp.status = falcon.HTTP_500
 
-    def on_delete(self, req, resp, uuid_value):
-        if self.historic_configuration_service.is_file_exists(uuid_value) is False:
+    def on_post_move_to_inactive(self, req, resp, uuid_value):
+        print 'on_post_move_to_inactive'
+        try:
+            configuration = self.historic_configuration_service.get_file_by_uuid(uuid_value)
+        except OSError:
+            resp.data = json.dumps({"error": 'cannot open folder with configurations'})
+            resp.status = falcon.HTTP_500
+            return
+        if configuration is None:
+            resp.data = json.dumps({"error": 'file not found'})
             resp.status = falcon.HTTP_404
             return
-        self.historic_configuration_service.delete_file(uuid_value)
+        now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        inactive_name = configuration.split('.')[0] + '_' + now + '.json'
+        self.historic_configuration_service.move_to_subdirectory(configuration, 'inactive', inactive_name)
         self.configuration_cache.load_cache()
+        resp.status = falcon.HTTP_200
+
+
+def on_delete(self, req, resp, uuid_value):
+    if self.historic_configuration_service.is_file_exists(uuid_value) is False:
+        resp.status = falcon.HTTP_404
+        return
+    self.historic_configuration_service.delete_file(uuid_value)
+    self.configuration_cache.load_cache()

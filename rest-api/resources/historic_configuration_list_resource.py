@@ -26,7 +26,7 @@ class HistoricConfigurationListResource(object):
 
     def map_to_configuration_info(self, configuration):
         print configuration
-        conf_json = self.file_name_service.get_file_by_uuid(configuration)
+        conf_json = self.file_name_service.get_json_by_uuid(configuration)
         now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         return {
             "uuid": configuration.split("_")[0],
