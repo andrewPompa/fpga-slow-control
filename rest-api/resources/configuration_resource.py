@@ -15,7 +15,7 @@ class ConfigurationResource(object):
     def on_get(self, req, resp, uuid_value):
         resp.content_type = "application/json"
         try:
-            json_configuration = self.configuration_service.get_file_by_uuid(uuid_value)
+            json_configuration = self.configuration_service.get_json_by_uuid(uuid_value)
         except OSError:
             resp.data = json.dumps({"error": 'cannot open folder with configurations'})
             resp.status = falcon.HTTP_500
@@ -61,7 +61,7 @@ class ConfigurationResource(object):
         try:
             json_configuration = json.loads(req.stream.read())
             self.configuration_service.update_file(uuid_value, json_configuration)
-            updated_json = self.configuration_service.get_file_by_uuid(uuid_value)
+            updated_json = self.configuration_service.get_json_by_uuid(uuid_value)
             resp.media = updated_json
             resp.status = falcon.HTTP_200
         except OSError:

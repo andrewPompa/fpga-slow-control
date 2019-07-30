@@ -31,6 +31,15 @@ class ConfigurationService(object):
             print "not filtered properly"
             return None
         configuration = configuration[0]
+        return configuration
+
+    def get_json_by_uuid(self, uuid_value):
+        configurations = self.find_valid_files()
+        configuration = filter(lambda config: config.startswith(uuid_value), configurations)
+        if configuration is None or len(configuration) == 0:
+            print "not filtered properly"
+            return None
+        configuration = configuration[0]
         try:
             f = open(self.configuration_file_directory + "/" + configuration, 'r')
             json_configuration = json.load(f)
@@ -91,3 +100,8 @@ class ConfigurationService(object):
     def create_directory_in_configuration_path(self, directory_path):
         if not os.path.exists(self.configuration_file_directory + directory_path):
             os.mkdir(self.configuration_file_directory + directory_path)
+
+    def move_to_subdirectory(self, file_name, subdirectory, new_file_name):
+        file_path = self.configuration_file_directory + file_name
+        new_file_path = self.configuration_file_directory + "/" + subdirectory + "/" + new_file_name
+        os.rename(file_path, new_file_path)
