@@ -1,11 +1,12 @@
 class Layout {
-    constructor(containerForInputsName) {
+    constructor(chartContainer) {
+        this.chartContainer = chartContainer;
         this.inputCounter = 0;
         this.chartCounter = 0;
-        this.containerForInputsName = containerForInputsName;
         this.inputs = [];
         this.charts = [];
         this.name = '';
+        this.uuid = null;
     }
 
     getWords(inputId) {
@@ -23,6 +24,15 @@ class Layout {
         }
     }
 
+
+    getInputs() {
+        return this.inputs.map(input => input.item.valueForConfiguration());
+    }
+
+    getCharts() {
+        return this.charts.map(chart => chart.valueForConfiguration());
+    }
+
     validateAndSendInput(inputId) {
         const input = this.inputs.find(i => i.id === inputId);
         if (!input) {
@@ -34,17 +44,27 @@ class Layout {
         }
     }
 
-    addNewChart(chartData) {
+    addNewChart(chartData, withInterval) {
         console.log(chartData);
         const id = this.chartCounter++;
         const chartItem = new ChartItem(id, chartData.name, chartData.interval, chartData.series);
         this.charts.push(chartItem);
         const canvas = chartItem.buildCanvas();
-        $('#chartsContainer').append(canvas);
-        chartItem.buildChart();
+        $('#' + this.chartContainer).append(canvas);
+        chartItem.buildChart(withInterval);
+    }
+
+    addNewChartWithId(chartData, id, withInterval) {
+        console.log(chartData);
+        const chartItem = new ChartItem(id, chartData.name, chartData.interval, chartData.series);
+        this.charts.push(chartItem);
+        const canvas = chartItem.buildCanvas();
+        $('#' + this.chartContainer).append(canvas);
+        chartItem.buildChart(withInterval);
     }
 
     addNewInput(input) {
+        console.log(input);
         const inputItem = new InputItem();
         inputItem.id = this.inputCounter++;
         inputItem.name = input.name;
@@ -54,7 +74,7 @@ class Layout {
         inputItem.readOnly = input.readOnly;
         inputItem.formula = input.formula;
         this.inputs.push({id: inputItem.id, item: inputItem});
-        $('#' + this.containerForInputsName).append(inputItem.generate());
+        $('#inputsContainer').append(inputItem.generate());
     }
 
     removeInput(id) {

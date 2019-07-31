@@ -15,7 +15,31 @@ class ChartItem {
         `;
     }
 
-    buildChart() {
+    valueForConfiguration() {
+        return {
+            id: this.id,
+            name: this.name,
+            interval: this.interval,
+            series: this.dataSets,
+        };
+    }
+
+    setLabels(labels) {
+        this.chart.data.labels = labels;
+    }
+
+    setSeries(id, data) {
+        console.log(data);
+        const foundDataset = this.chart.data.datasets.find(dataset => dataset.id === id);
+        if (!foundDataset) {
+            console.log('cannot find dataset: ' + id);
+            return;
+        }
+        foundDataset.data = data;
+        this.chart.update();
+    }
+
+    buildChart(withInterval) {
         const ctx = $(`#chart_${this.id}`)[0].getContext('2d');
         const datasets = this.dataSets.map(dataset => {
             const colour = Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255);
@@ -26,7 +50,8 @@ class ChartItem {
                 data: [],
                 address: dataset.address,
                 dataType: dataset.dataType,
-                formula: dataset.formula
+                formula: dataset.formula,
+                id: dataset.id
             };
         });
         this.chart = new Chart(ctx, {
@@ -39,12 +64,12 @@ class ChartItem {
                 title: {display: true, text: this.name}
             }
         });
-        setInterval(() => this.tickFunction(), this.interval);
+        if (withInterval === true) {
+            this.intervalId = setInterval(() => this.tickFunction(), this.interval);
+        }
     }
 
     tickFunction() {
-        console.log(this);
-        console.log(this.chart.data.datasets);
         this.chart.data.labels.push(currentTimeInMillis());
         this.chart.data.datasets.forEach(dataset => {
             if (dataset.dataType === dateType.hex) {
@@ -58,9 +83,12 @@ class ChartItem {
     }
 
     addData(value, dataset) {
-        console.log(dataset);
         dataset.data.push(value);
         this.chart.update();
+    }
+
+    removeInterval() {
+        clearInterval(this.intervalId);
     }
 
 }

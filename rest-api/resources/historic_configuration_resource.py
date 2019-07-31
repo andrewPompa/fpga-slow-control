@@ -20,21 +20,34 @@ class HistoricConfigurationResource(object):
 
     def on_get(self, req, resp, uuid_value):
         resp.content_type = "application/json"
-        try:
-            json_configuration = self.historic_configuration_service.get_json_by_uuid(uuid_value)
-        except OSError:
-            resp.data = json.dumps({"error": 'cannot open folder with configurations'})
-            resp.status = falcon.HTTP_500
-            return
-        except ValueError:
-            resp.data = json.dumps({"error": 'cannot parse configuration file'})
-            resp.status = falcon.HTTP_500
-            return
-        if json_configuration is None:
-            resp.status = falcon.HTTP_204
-            return
-        resp.media = json_configuration
-        resp.status = falcon.HTTP_200
+        if self.historic_configuration_service.is_file_exists(uuid_value) is True:
+            try:
+                json_configuration = self.historic_configuration_service.get_json_by_uuid(uuid_value)
+                resp.media = json_configuration
+                resp.status = falcon.HTTP_200
+                return
+            except OSError:
+                resp.data = json.dumps({"error": 'cannot open folder with configurations'})
+                resp.status = falcon.HTTP_500
+                return
+            except ValueError:
+                resp.data = json.dumps({"error": 'cannot parse configuration file'})
+                resp.status = falcon.HTTP_500
+                return
+        if self.inactive_historic_configuration_service.is_file_exists(uuid_value) is True:
+            try:
+                json_configuration = self.inactive_historic_configuration_service.get_json_by_uuid(uuid_value)
+                resp.media = json_configuration
+                resp.status = falcon.HTTP_200
+                return
+            except OSError:
+                resp.data = json.dumps({"error": 'cannot open folder with configurations'})
+                resp.status = falcon.HTTP_500
+                return
+            except ValueError:
+                resp.data = json.dumps({"error": 'cannot parse configuration file'})
+                resp.status = falcon.HTTP_500
+                return
 
     @falcon.before(validate_request_headers)
     def on_post_new_configuration(self, req, resp):
@@ -72,6 +85,7 @@ class HistoricConfigurationResource(object):
         inactive_name = configuration.split('.')[0] + '_' + now + '.json'
         self.historic_configuration_service.move_to_subdirectory(configuration, 'inactive', inactive_name)
         self.configuration_cache.reload()
+        resp.data = json.dumps({"status": 'ok'})
         resp.status = falcon.HTTP_200
 
     def on_delete(self, req, resp, uuid_value):

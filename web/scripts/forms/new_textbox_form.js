@@ -1,16 +1,5 @@
-const dateType = {
-    date: 'date',
-    math: 'math',
-    hex: 'hex'
-};
-
-let wordService = new WordsService();
-let newLayoutTextboxRadio;
-let newLayoutChartRadio;
-
-let layout = new Layout('inputsContainer');
-
 const newLayoutTextboxForm = new FormControls();
+
 
 $(document).ready(() => {
     $("input[type=radio][name=radio-stacked]").change(newLayoutOnChangeRadioButton);
@@ -25,11 +14,11 @@ $(document).ready(() => {
         newLayoutOnChangeRadioButton({target: newLayoutTextboxRadio});
     }
 
-    newLayoutTextboxForm.add('name', 'Test', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutTextboxItemNameInputError');
-    newLayoutTextboxForm.add('address', '0xAABBCCDD', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutTextboxAddressInputError');
+    newLayoutTextboxForm.add('name', '', (value) => value.match('^[\\w\\s]+$'), 'Please provide item name', 'newLayoutTextboxItemNameInputError');
+    newLayoutTextboxForm.add('address', '', (value) => value.match('^0x[A-Fa-f0-9]{1,8}$'), 'Please provide hexadecimal value (0x0 - 0xFFFFFFFF)', 'newLayoutTextboxAddressInputError');
     newLayoutTextboxForm.add(
         'words',
-        '4',
+        '',
         function (value) {
             const type = this.getParentForm().getValue('dataType');
             return !type || (type === dateType.hex && value.match('^[1-9]\\d*$')) || (type === dateType.math || type === dateType.date)
@@ -37,7 +26,7 @@ $(document).ready(() => {
         'Please provide num of words (grater than 0)',
         'newLayoutTextboxWordsInputError'
     );
-    newLayoutTextboxForm.add('dataType', 'hex', (value) => !!value, 'Please choose data type', 'newLayoutTextboxDataTypeError');
+    newLayoutTextboxForm.add('dataType', '', (value) => !!value, 'Please choose data type', 'newLayoutTextboxDataTypeError');
     newLayoutTextboxForm.add(
         'formula',
         '',
@@ -104,6 +93,8 @@ function clearNewLayoutTextboxForm() {
     newLayoutTextboxForm.setValueNoValidate('dataType', '');
     newLayoutTextboxForm.setValueNoValidate('formula', '');
     newLayoutTextboxForm.setValueNoValidate('readOnly', false);
+
+    $('#inputsContainer').html('');
 }
 
 function newLayoutChangeReadOnly() {
@@ -124,12 +115,10 @@ function newLayoutSetTextboxWordsChanged(value) {
 function newLayoutOnChangeRadioButton(e) {
     if (newLayoutTextboxRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").removeAttr("hidden");
-        $("#newLayoutChartForm").attr("hidden", 'hidden');
+        currentLayoutForm.stop();
     } else if (newLayoutChartRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").attr("hidden", 'hidden');
-        $("#newLayoutChartForm").removeAttr("hidden");
-
-        // newItem = {name: '', address: -1, words: -1, type: null, formula: '', interval: -1};
+        currentLayoutForm.start();
     }
 }
 

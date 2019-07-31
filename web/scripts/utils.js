@@ -3,7 +3,7 @@ function base64ToByteArray(base64) {
     const rawLength = raw.length;
     const array = new Uint8Array(new ArrayBuffer(rawLength));
 
-    for(let i = 0; i < rawLength; i++) {
+    for (let i = 0; i < rawLength; i++) {
         array[i] = raw.charCodeAt(i);
     }
     return array;
@@ -21,6 +21,19 @@ function byteArrayToNumList(array) {
     }
     return numbers;
 }
+
+function base64ToMathValue(value, formula) {
+    const nums = byteArrayToNumList(base64ToByteArray(value));
+    if (!nums || !nums.length || nums.length === 0) {
+        return NaN;
+    }
+    console.log(nums[0]);
+    console.log(formula);
+    const mathEquation = math.parse(formula).compile();
+    let scope = {x: nums[0]};
+    return  mathEquation.evaluate(scope);
+}
+
 
 function hexToByteArray(hex, numOfWords) {
     const wordBytes = new Uint8Array(numOfWords * 4);
@@ -56,4 +69,14 @@ function secondsToHourMinutesSeconds(seconds) {
 function currentTimeInMillis() {
     const now = new Date();
     return now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds() + "." + now.getMilliseconds();
+}
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
 }
