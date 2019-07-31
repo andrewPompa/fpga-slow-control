@@ -19,7 +19,7 @@ class HistoricDataService(object):
         series = self.find_series(uuid_value, chart_id)
         if timeline is None or series is None:
             return None
-        return {'layouts': timeline, 'series': series}
+        return {'labels': timeline, 'series': series}
 
     def get_timeline(self, uuid_value, chart_id):
         timeline_file = self.find_file(uuid_value + '_' + chart_id + "_timeline.dat")
@@ -36,7 +36,7 @@ class HistoricDataService(object):
         return timeline
 
     def find_series(self, uuid_value, chart_id):
-        series = {}
+        series = []
         files = self.find_file_with_name_starts(uuid_value + '_' + chart_id)
         for series_file in files:
             if series_file.find('timeline') != -1:
@@ -49,7 +49,8 @@ class HistoricDataService(object):
                 print "cannot open file", e
                 return None
             series_id = series_file.split('_')[2].split('.')[0]
-            series[series_id] = values
+            series_object = {'id': int(series_id), 'values': values}
+            series.append(series_object)
         return series
 
     def find_file(self, file_name):
