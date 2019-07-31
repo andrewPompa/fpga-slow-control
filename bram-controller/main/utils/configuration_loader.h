@@ -75,6 +75,12 @@ public:
         return values;
     }
 
+    uint getAsWord(std::string const &argumentName) {
+        const std::string value = getAsString(argumentName);
+        HexArgumentReader hexArgumentReader;
+        return hexArgumentReader.readWord(value);
+    }
+
     std::string getAsString(std::string const &argumentName) {
         std::string line;
         while (getline(file, line)) {
