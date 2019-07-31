@@ -8,7 +8,7 @@ class MemoryService(object):
 
     def get_as_base64(self, address, num_of_words):
         memory_bytes = check_output([self.bram_file_path, "-s", "-r", address, num_of_words], stdin=PIPE)
-        return b64encode(memory_bytes)
+        return memory_bytes
 
     def put_from_base64(self, address, num_of_words, decode_base64_words):
         response = check_call([self.bram_file_path, "-s", "-w", address, num_of_words, decode_base64_words])

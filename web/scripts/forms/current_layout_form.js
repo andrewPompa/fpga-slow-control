@@ -35,7 +35,6 @@ class CurrentLayoutForm {
         this.chartForm = new ChartForm();
         this.chartForm.addListener(this);
         this.registerFormControls();
-        $('#layoutNameInput').val('');
         $('#chartsContainer').html('');
         this.layout.charts.forEach(chart => chart.removeInterval());
         this.layout = new Layout('chartsContainer');
@@ -80,6 +79,7 @@ class CurrentLayoutForm {
             if (this.layout.uuid) {
                 configurationService.put(this.layout.uuid, layoutObject, () => {
                     new Toast('success', 'Layout updated').show();
+                    persistedLayout = new Layout('');
                     persistedLayout.uuid = this.layout.uuid;
                     persistedLayout.name = this.formControls.getValue('name');
                     persistedLayout.inputs = [...currentLayoutForm.layout.inputs];
@@ -91,6 +91,7 @@ class CurrentLayoutForm {
                     console.log(uuid);
                     this.layout.uuid = uuid;
                     new Toast('success', 'Layout created').show();
+                    persistedLayout = new Layout('');
                     persistedLayout.uuid = uuid;
                     persistedLayout.name = this.formControls.getValue('name');
                     persistedLayout.inputs = [...currentLayoutForm.layout.inputs];

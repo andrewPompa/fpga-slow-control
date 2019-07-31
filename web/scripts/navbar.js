@@ -14,6 +14,7 @@ $(document).ready(() => {
     currentDataButton = $('#currentDataButton');
     currentDataButton.click();
     resetCurrentLayout();
+    $('#layoutNameInput').val('');
 });
 
 function resetCurrentLayout() {
