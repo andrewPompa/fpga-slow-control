@@ -85,6 +85,7 @@ class HistoricConfigurationResource(object):
         inactive_name = configuration.split('.')[0] + '_' + now + '.json'
         self.historic_configuration_service.move_to_subdirectory(configuration, 'inactive', inactive_name)
         self.configuration_cache.reload()
+        resp.data = json.dumps({"status": 'ok'})
         resp.status = falcon.HTTP_200
 
     def on_delete(self, req, resp, uuid_value):

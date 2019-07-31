@@ -26,6 +26,6 @@ class ConfigurationListResource(object):
 
     def map_to_configuration_info(self, configuration):
         print configuration
-        conf_json = self.file_name_service.get_file_by_uuid(configuration)
+        conf_json = self.file_name_service.get_json_by_uuid(configuration)
         return {"uuid": configuration.split("_")[0], "creationDate": configuration.split("_")[1].split('.')[0], "name": conf_json['name']}
 
