@@ -178,17 +178,17 @@ class ChartFormBuilder {
                 <div id="${name}AddSeriesFormulaInputError" class="invalid-tooltip"></div>
             </div>
             <div class="col-xl-1">
-                <button id="${name}AddSeriesButton" type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAddSeries()">Add series <span><i class="fa fa-check"></i></span></button>
+                <button id="${name}AddSeriesButton" type="button" class="btn w-100 btn-success" >Add series <span><i class="fa fa-check"></i></span></button>
             </div>
         </div>
         <div class="form-row align-items-center mt-2">
             <div class="col-xl-2">
-                <button id="${name}AddChartButton" type="button" class="btn w-100 btn-success" onclick="newLayoutValidateAndSaveChart()">Add new chart <span><i class="fa fa-area-chart"></i></span>
+                <button id="${name}AddChartButton" type="button" class="btn w-100 btn-success" >Add new chart <span><i class="fa fa-area-chart"></i></span>
                 </button>
                 <div id="${name}AddChartButtonError" class="invalid-tooltip"></div>
             </div>
             <div class="col-xl-2">
-                <button id="${name}ClearChartButton" type="button" class="btn w-100 btn-secondary" onclick="newLayoutClearChartForm()">Clear form <span><i class="fa fa-trash"></i></span></button>
+                <button id="${name}ClearChartButton" type="button" class="btn w-100 btn-secondary" >Clear form <span><i class="fa fa-trash"></i></span></button>
             </div>
         </div>
         `;
@@ -216,7 +216,7 @@ class ChartSeriesBuilder {
                     <input type="text" class="form-control" id="${name}_${series.id}FormulaInput_${series.id}" value="${series.formula}" readonly>
                 </div>
                 <div class="col-md-1">
-                    <button type="button" id="${series.id}DeleteSeries" class="btn w-100 btn-danger" onclick="newLayoutRemoveSeries(${series.id})">Delete series <span><i class="fa fa-times"></i></span></button>
+                    <button type="button" id="${series.id}DeleteSeries" class="btn w-100 btn-danger">Delete series <span><i class="fa fa-times"></i></span></button>
                 </div>
             </div>`;
     }

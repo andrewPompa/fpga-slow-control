@@ -2,12 +2,12 @@ let configurationService = new ConfigurationService();
 let wordService = new WordsService();
 let newLayoutTextboxRadio;
 let newLayoutChartRadio;
-let newLayout = new FormControls();
-let layout = new Layout('chartsContainer');
 let persistedLayout = null;
 let currentDataButton;
 let historicalLayoutConfigurer = new HistoricalLayoutConfigurer();
 let historicConfigurationService = new HistoricConfigurationService();
+let isCurrentLayout = true;
+let currentLayoutForm = new CurrentLayoutForm();
 
 $(document).ready(() => {
     currentDataButton = $('#currentDataButton');
@@ -16,9 +16,39 @@ $(document).ready(() => {
 });
 
 function resetCurrentLayout() {
-    layoutReset();
-    newLayoutClearChartForm();
+    currentLayoutForm.reset();
     clearNewLayoutTextboxForm();
+}
+
+function onClickCurrentDataButton() {
+    $('#historicalDataButton').removeClass("active");
+    $('#activeLayoutViewContainer').removeAttr('hidden');
+    $('#currentDataContainer').removeAttr('hidden');
+    currentDataButton.addClass("active");
+    layoutInfoListAll();
+    currentLayoutForm.start();
+    historicalLayoutConfigurer.stop();
+    isCurrentLayout = true;
+}
+
+function onClickHistoricalDataButton() {
+    if (currentLayoutForm.isActiveLayoutChanged()) {
+        if (!confirm('Edited layout is changed, would you like to update it?')) {
+            return;
+        }
+        currentLayoutForm.validateAndSaveLayout();
+    }
+    resetCurrentLayout();
+    currentDataButton.removeClass("active");
+    $('#historicalDataButton').addClass("active");
+    $('#activeLayoutViewContainer').attr('hidden', '');
+    $('#currentDataContainer').attr('hidden', '');
+    historicalLayoutConfigurer.start();
+
+    $('#newLayoutChartFormContainer').html('');
+
+    isCurrentLayout = false;
+
 }
 
 function layoutInfoListAll() {
@@ -40,14 +70,14 @@ function loadLayout(uuid) {
         persistedLayout.uuid = uuid;
         persistedLayout.name = configuration.name;
 
-        layout.uuid = uuid;
-        layout.name = configuration.name;
-        layoutSetName(configuration.name);
-        configuration.controls.inputs.forEach(input => layout.addNewInput(input));
-        configuration.controls.charts.forEach(chart => layout.addNewChart(chart, true));
+        currentLayoutForm.layout.uuid = uuid;
+        currentLayoutForm.layout.name = configuration.name;
+        currentLayoutForm.setName(configuration.name);
+        configuration.controls.inputs.forEach(input => currentLayoutForm.layout.addNewInput(input));
+        configuration.controls.charts.forEach(chart => currentLayoutForm.layout.addNewChart(chart, true));
 
-        persistedLayout.inputs = [...layout.inputs];
-        persistedLayout.charts = [...layout.charts];
+        persistedLayout.inputs = [...currentLayoutForm.layout.inputs];
+        persistedLayout.charts = [...currentLayoutForm.layout.charts];
         console.log(persistedLayout);
     });
     console.log('loading layout' + uuid);
@@ -65,50 +95,19 @@ function removeLayout(uuid) {
     });
 }
 
-
-function onClickCurrentDataButton() {
-    $('#historicalDataButton').removeClass("active");
-    $('#activeLayoutViewContainer').removeAttr('hidden');
-    currentDataButton.addClass("active");
-    // layoutInfoListAll();
-
-}
-
-function onClickHistoricalDataButton() {
-    if (isActiveLayoutChanged()) {
-        if (!confirm('Edited layout is changed, would you like to update it?')) {
-            return;
-        }
-        validateAndSaveLayout();
-    }
-    resetCurrentLayout();
-    currentDataButton.removeClass("active");
-    $('#historicalDataButton').addClass("active");
-    $('#activeLayoutViewContainer').attr('hidden', '');
-    historicalLayoutConfigurer.start();
-
-
-}
-
 function onAddNewLayout() {
-    if (isActiveLayoutChanged()) {
-        if (!confirm('Edited layout is changed, would you like to update it?')) {
-            return;
+    if (isCurrentLayout === true) {
+        if (currentLayoutForm.isActiveLayoutChanged()) {
+            if (!confirm('Edited layout is changed, would you like to update it?')) {
+                return;
+            }
+            currentLayoutForm.validateAndSaveLayout();
         }
-        validateAndSaveLayout();
+        resetCurrentLayout();
+    } else {
+        historicalLayoutConfigurer.addNewLayout();
     }
-    resetCurrentLayout();
-}
 
-function isActiveLayoutChanged() {
-    const layoutObject = {name: newLayout.getValue('name'), controls: {inputs: layout.getInputs(), charts: layout.getCharts()}};
-    if (!persistedLayout && layoutObject.name === '' && layoutObject.controls.inputs.length === 0 && layoutObject.controls.charts.length === 0) {
-        return false;
-    } else if (!persistedLayout) {
-        return true;
-    }
-    const persistedLayoutObject = {name: persistedLayout.name, controls: {inputs: persistedLayout.getInputs(), charts: persistedLayout.getCharts()}};
-    return layout.uuid && JSON.stringify(layoutObject) !== JSON.stringify(persistedLayoutObject);
 }
 
 

@@ -7,6 +7,7 @@ class HistoricalLayoutConfigurer {
         this.charts = [];
         this.formControls = null;
         this.layout = null;
+        this.dataShowed = false;
     }
 
     start() {
@@ -19,8 +20,28 @@ class HistoricalLayoutConfigurer {
         this.getInfos();
     }
 
+    stop() {
+        if (!this.container) {
+            return;
+        }
+        this.container.attr('hidden', '');
+        $('#historicalLayoutCharFormContainer').html('');
+        $('#' + this.nameInput).off('input');
+        $('#saveHistoricalConfigurationButton').off('click');
+
+        const historicalData = $('#historicalData');
+        historicalData.html('');
+        historicalData.attr('hidden', '');
+        this.dataShowed = false;
+        this.layout = null;
+    }
+
     getInfos() {
         historicConfigurationService.getList(configurations => {
+            if (!configurations || !configurations.length || configurations.length < 1) {
+                $('#layoutInfos').html(HistoricalLayoutInfo.generateEmpty());
+                return;
+            }
             console.log(configurations);
             const html = configurations.map(configuration => HistoricalLayoutInfo.generate(configuration)).join("<br />");
             $('#layoutInfos').html(html);
@@ -34,7 +55,15 @@ class HistoricalLayoutConfigurer {
             historicConfigurationService.post(configuration, (result) => {
                 new Toast('success', 'Configuration saved').show();
                 $('#historicalLayoutConfiguredChartsContainer').html('');
+                this.getInfos();
             });
+        }
+    }
+
+    addNewLayout() {
+        if (this.dataShowed === true) {
+            this.stop();
+            this.start();
         }
     }
 
@@ -48,6 +77,10 @@ class HistoricalLayoutConfigurer {
     onNewChart(chartData) {
         console.log(chartData);
         this.formControls.pushToList('charts', chartData);
+        if (this.formControls.getValue('charts').length > 0) {
+            $('#historicalLayoutConfiguredChartsLabel').removeAttr('hidden');
+            $('#saveHistoricalConfigurationButton').removeAttr('hidden');
+        }
         const chartConfiguration = ConfiguredChartListBuilder.generate(chartData, guid());
         $('#historicalLayoutConfiguredChartsContainer').append(chartConfiguration);
     }
@@ -55,7 +88,7 @@ class HistoricalLayoutConfigurer {
     onClickMakeInactiveConfiguration(uuid) {
         console.log(uuid);
         this.registerFormControls();
-        historicConfigurationService.makeInactive(uuid, () => this.getInfos());
+        historicConfigurationService.makeInactive(uuid, () => {console.log('getinfos');this.getInfos()});
     }
 
     onClickRemoveLayoutInfo(uuid) {
@@ -71,9 +104,11 @@ class HistoricalLayoutConfigurer {
     getData(uuid) {
         historicConfigurationService.get(uuid, (result) => {
             console.log(result);
-            $('#historicalData').html('');
+            const historicalData = $('#historicalData');
+            historicalData.html('');
+            historicalData.removeAttr('hidden');
             $('#historicalCreationForm').attr('hidden', '');
-            $('#historicalData').removeAttr('hidden');
+            this.dataShowed = true;
 
             this.layout = new Layout('historicalData');
             result.charts.forEach(chartInfo => this.layout.addNewChartWithId(chartInfo, chartInfo.id, false));
@@ -89,6 +124,7 @@ class HistoricalLayoutConfigurer {
             })
         });
     }
+
     setSeries(chartInfo, dataSeries, chart) {
         const chartInfoSeries = chartInfo.series.find(searchedSeries => searchedSeries.id === dataSeries.id);
         if (!chartInfoSeries) {
@@ -191,4 +227,14 @@ class HistoricalLayoutInfo {
         </div>
         `;
     }
+    static generateEmpty() {
+        return `
+        <div class="row">
+            <div class="col" ">
+                No content available
+            </div>
+        </div>
+        `;
+    }
+
 }

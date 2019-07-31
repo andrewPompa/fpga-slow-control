@@ -115,10 +115,10 @@ function newLayoutSetTextboxWordsChanged(value) {
 function newLayoutOnChangeRadioButton(e) {
     if (newLayoutTextboxRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").removeAttr("hidden");
-        $("#newLayoutChartForm").attr("hidden", 'hidden');
+        currentLayoutForm.stop();
     } else if (newLayoutChartRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").attr("hidden", 'hidden');
-        $("#newLayoutChartForm").removeAttr("hidden");
+        currentLayoutForm.start();
     }
 }
 

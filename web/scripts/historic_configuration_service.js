@@ -26,6 +26,8 @@ class HistoricConfigurationService {
         const ajax = {};
         ajax.type = "POST";
         ajax.url = `/historic-configuration/${uuid}/inactive`;
+        ajax.contentType = "application/json";
+        ajax.dataType = "json";
         ajax.success = onSuccess;
         $.ajax(ajax);
     }
