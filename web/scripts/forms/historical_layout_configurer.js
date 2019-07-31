@@ -6,6 +6,7 @@ class HistoricalLayoutConfigurer {
         this.chartForm.addListener(this);
         this.charts = [];
         this.formControls = null;
+        this.layout = null;
     }
 
     start() {
@@ -15,8 +16,14 @@ class HistoricalLayoutConfigurer {
         this.container.removeAttr('hidden');
         this.registerFormControls();
         $('#saveHistoricalConfigurationButton').on('click', () => this.validateAndSend());
-        historicConfigurationService.getList(configuration => {
-            console.log(configuration);
+        this.getInfos();
+    }
+
+    getInfos() {
+        historicConfigurationService.getList(configurations => {
+            console.log(configurations);
+            const html = configurations.map(configuration => HistoricalLayoutInfo.generate(configuration)).join("<br />");
+            $('#layoutInfos').html(html);
         });
     }
 
@@ -24,7 +31,10 @@ class HistoricalLayoutConfigurer {
         if (this.formControls.isValid() === true) {
             const configuration = this.formControls.getValues();
             console.log(configuration);
-            historicConfigurationService.post(configuration, (result) => console.log(result));
+            historicConfigurationService.post(configuration, (result) => {
+                new Toast('success', 'Configuration saved').show();
+                $('#historicalLayoutConfiguredChartsContainer').html('');
+            });
         }
     }
 
@@ -40,6 +50,59 @@ class HistoricalLayoutConfigurer {
         this.formControls.pushToList('charts', chartData);
         const chartConfiguration = ConfiguredChartListBuilder.generate(chartData, guid());
         $('#historicalLayoutConfiguredChartsContainer').append(chartConfiguration);
+    }
+
+    onClickMakeInactiveConfiguration(uuid) {
+        console.log(uuid);
+        this.registerFormControls();
+        historicConfigurationService.makeInactive(uuid, () => this.getInfos());
+    }
+
+    onClickRemoveLayoutInfo(uuid) {
+        if (!confirm('Do you really would like to remove this layout (all data will be lost)?')) {
+            return;
+        }
+        historicConfigurationService.remove(uuid, (result) => {
+            new Toast('success', 'Layout removed').show();
+            this.getInfos();
+        })
+    }
+
+    getData(uuid) {
+        historicConfigurationService.get(uuid, (result) => {
+            console.log(result);
+            $('#historicalData').html('');
+            $('#historicalCreationForm').attr('hidden', '');
+            $('#historicalData').removeAttr('hidden');
+
+            this.layout = new Layout('historicalData');
+            result.charts.forEach(chartInfo => this.layout.addNewChartWithId(chartInfo, chartInfo.id, false));
+            result.charts.forEach(chartInfo => {
+                new Toast('info', 'getting data for:' + chartInfo.name + ' chart').show();
+                historicConfigurationService.getData(uuid, chartInfo.id, (data) => {
+                    const foundChat = this.layout.charts.find(chartItem => chartItem.id === chartInfo.id);
+                    if (foundChat) {
+                        foundChat.setLabels(data.labels);
+                        data.series.forEach(dataSeries => this.setSeries(chartInfo, dataSeries, foundChat));
+                    }
+                });
+            })
+        });
+    }
+    setSeries(chartInfo, dataSeries, chart) {
+        const chartInfoSeries = chartInfo.series.find(searchedSeries => searchedSeries.id === dataSeries.id);
+        if (!chartInfoSeries) {
+            console.log('series not found');
+            return;
+        }
+        let values = [];
+        if (chartInfoSeries.dataType === dateType.hex) {
+            values = dataSeries.values.map(value => byteArrayToNumList(base64ToByteArray(value))[0]);
+        } else if (chartInfoSeries.dataType === dateType.math) {
+            values = dataSeries.values.map(value => base64ToMathValue(value, chartInfoSeries.formula));
+        }
+        console.log(values);
+        chart.setSeries(dataSeries.id, values);
     }
 
 }
@@ -88,8 +151,44 @@ class ConfiguredChartSeriesListBuilder {
 }
 
 class HistoricalLayoutInfo {
-    static generate() {
+    static generate(info) {
+        const bg = info.isActive ? 'bg-light' : 'bg-dark';
+        const colour = info.isActive ? '' : 'text-white';
+        const isActiveText = info.isActive ? 'Active' : 'Inactive';
+        const stopRecordingDataDiv = info.isActive ? HistoricalLayoutInfo.stopRecordingDataDiv(info) : '';
         return `
+        <div class="card ${bg} ${colour} border-light h-100 mb-2" style="width: 27rem; cursor: pointer">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8" ">
+                        <h5 class="card-title" onclick="historicalLayoutConfigurer.getData('${info.uuid}')" ">${info.name}(<code>${isActiveText}</code>)</h5>
+                    </div>
+                    <div class="col-md-4 text-right" style="cursor: pointer">
+                        <span class="alert alert-danger" onclick="historicalLayoutConfigurer.onClickRemoveLayoutInfo('${info.uuid}')" title="Remove configuration"><i class="fa fa-times"></i></span>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-8" onclick="historicalLayoutConfigurer.getData('${info.uuid}')">
+                        <p class="card-subtitle text-left">From: ${info.creationDate}</p>
+                    </div>
+                    ${stopRecordingDataDiv}
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-8" onclick="historicalLayoutConfigurer.getData('${info.uuid}')">
+                        <p class="card-subtitle text-left">To: ${info.toDate}</p>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    static stopRecordingDataDiv(info) {
+        return `
+        <div class="col-md-4 text-right" style="cursor: pointer">
+            <span class="alert alert-info" onclick="historicalLayoutConfigurer.onClickMakeInactiveConfiguration('${info.uuid}')" title="Stop recording data (make inactive)"><i class="fa fa-stop"></i></span>
+        </div>
         `;
     }
 }

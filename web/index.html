@@ -24,13 +24,13 @@
     <script src="scripts/configuration_service.js"></script>
     <script src="scripts/historic_configuration_service.js"></script>
     <script src="scripts/models/form_controls.js"></script>
-    <script src="scripts/models/layout_class.js"></script>
+    <script src="scripts/models/layout.js"></script>
     <script src="scripts/models/chart_item.js"></script>
     <script src="scripts/models/input_item.js"></script>
     <script src="scripts/forms/chart_form.js"></script>
     <script src="scripts/forms/historical_layout_configurer.js"></script>
     <script src="scripts/navbar.js"></script>
-    <script src="scripts/forms/layout_form.js"></script>
+    <script src="scripts/forms/current_layout_form.js"></script>
     <script src="scripts/forms/new_chart_form.js"></script>
     <script src="scripts/forms/new_textbox_form.js"></script>
 
@@ -51,35 +51,8 @@
             <button class="nav-link btn btn-outline-primary dropdown-toggle" type="button" id="layoutsDropdown" data-toggle="dropdown">
                 Select layout
             </button>
-            <div id="layoutInfos" class="dropdown-menu" aria-labelledby="layoutsDropdown">
-                <div class="card bg-secondary text-white border-light h-100 mb-2" style="width: 25rem; cursor: pointer">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8" onclick="loadLayout('${configuration.uuid}')">
-                                <h5 class="card-title">Historic 001(<code>Active</code>)</h5>
-                            </div>
-                            <div class="col-md-4 text-right" style="cursor: pointer" onclick="removeLayout('${configuration.uuid}')">
-                                <span class="alert alert-danger"><i class="fa fa-times"></i></span>
-                            </div>
-                        </div>
-                        <div class="row mt-3" onclick="loadLayout('${configuration.uuid}')">
-                            <div class="col-md-8">
-                                <p class="card-subtitle text-left">Created: 2019-07-30-15-29-29</p>
-                            </div>
-                            <div class="col-md-4 text-right" style="cursor: pointer" onclick="removeLayout('${configuration.uuid}')">
-                                <span class="alert alert-warning"><i class="fa fa-stop"></i></span>
-                            </div>
-                        </div>
-                        <div class="row mt-4" onclick="loadLayout('${configuration.uuid}')">
-                            <div class="col-md-8">
-                                <p class="card-subtitle text-left">Created: 2019-07-30-15-29-29</p>
-                            </div>
-                            <div class="col-md-4 text-right" style="cursor: pointer" onclick="removeLayout('${configuration.uuid}')">
-                                <span class="alert alert-success"><i class="fa fa-plus"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="layoutInfos" class="dropdown-menu" aria-labelledby="layoutsDropdown" style="max-height: 500px;">
+
             </div>
         </div>
         <button id="addNewLayout" class="nav-link btn btn-outline-success mr-2" onclick="onAddNewLayout()">Add new layout</button>
@@ -294,6 +267,8 @@
             </div>
         </div>
     </form>
+</div>
+<div id="historicalData" class="form-row align-items-center" style="min-height: 100%;" hidden>
 </div>
 </body>
 </html>

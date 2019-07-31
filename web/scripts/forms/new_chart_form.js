@@ -98,7 +98,7 @@ function newLayoutRemoveSeries(id) {
 function newLayoutValidateAndSaveChart() {
     if (newLayoutChartForm.isValid() === true) {
         const chartData = newLayoutChartForm.getValues();
-        layout.addNewChart(chartData);
+        layout.addNewChart(chartData, true);
         newLayoutClearChartForm();
     }
 }

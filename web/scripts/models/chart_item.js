@@ -24,7 +24,22 @@ class ChartItem {
         };
     }
 
-    buildChart() {
+    setLabels(labels) {
+        this.chart.data.labels = labels;
+    }
+
+    setSeries(id, data) {
+        console.log(data);
+        const foundDataset = this.chart.data.datasets.find(dataset => dataset.id === id);
+        if (!foundDataset) {
+            console.log('cannot find dataset: ' + id);
+            return;
+        }
+        foundDataset.data = data;
+        this.chart.update();
+    }
+
+    buildChart(withInterval) {
         const ctx = $(`#chart_${this.id}`)[0].getContext('2d');
         const datasets = this.dataSets.map(dataset => {
             const colour = Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255) + ', ' + Math.floor(Math.random() * 255);
@@ -35,7 +50,8 @@ class ChartItem {
                 data: [],
                 address: dataset.address,
                 dataType: dataset.dataType,
-                formula: dataset.formula
+                formula: dataset.formula,
+                id: dataset.id
             };
         });
         this.chart = new Chart(ctx, {
@@ -48,7 +64,9 @@ class ChartItem {
                 title: {display: true, text: this.name}
             }
         });
-        this.intervalId = setInterval(() => this.tickFunction(), this.interval);
+        if (withInterval === true) {
+            this.intervalId = setInterval(() => this.tickFunction(), this.interval);
+        }
     }
 
     tickFunction() {

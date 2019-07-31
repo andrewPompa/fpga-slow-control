@@ -26,7 +26,7 @@ function layoutReset() {
     $('#layoutNameInput').val('');
 
     layout.charts.forEach(chart => chart.removeInterval());
-    layout = new Layout();
+    layout = new Layout('chartsContainer');
 
     newLayout.setValueNoValidate('name', '');
     newLayout.setValueNoValidate('controls', []);

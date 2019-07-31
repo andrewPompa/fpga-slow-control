@@ -1,5 +1,6 @@
 class Layout {
-    constructor() {
+    constructor(chartContainer) {
+        this.chartContainer = chartContainer;
         this.inputCounter = 0;
         this.chartCounter = 0;
         this.inputs = [];
@@ -43,14 +44,23 @@ class Layout {
         }
     }
 
-    addNewChart(chartData) {
+    addNewChart(chartData, withInterval) {
         console.log(chartData);
         const id = this.chartCounter++;
         const chartItem = new ChartItem(id, chartData.name, chartData.interval, chartData.series);
         this.charts.push(chartItem);
         const canvas = chartItem.buildCanvas();
-        $('#chartsContainer').append(canvas);
-        chartItem.buildChart();
+        $('#' + this.chartContainer).append(canvas);
+        chartItem.buildChart(withInterval);
+    }
+
+    addNewChartWithId(chartData, id, withInterval) {
+        console.log(chartData);
+        const chartItem = new ChartItem(id, chartData.name, chartData.interval, chartData.series);
+        this.charts.push(chartItem);
+        const canvas = chartItem.buildCanvas();
+        $('#' + this.chartContainer).append(canvas);
+        chartItem.buildChart(withInterval);
     }
 
     addNewInput(input) {

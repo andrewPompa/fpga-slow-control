@@ -3,7 +3,7 @@ let wordService = new WordsService();
 let newLayoutTextboxRadio;
 let newLayoutChartRadio;
 let newLayout = new FormControls();
-let layout = new Layout();
+let layout = new Layout('chartsContainer');
 let persistedLayout = null;
 let currentDataButton;
 let historicalLayoutConfigurer = new HistoricalLayoutConfigurer();
@@ -36,7 +36,7 @@ function layoutInfoListAll() {
 function loadLayout(uuid) {
     configurationService.get(uuid, (configuration) => {
         resetCurrentLayout();
-        persistedLayout = new Layout();
+        persistedLayout = new Layout('chartsContainer');
         persistedLayout.uuid = uuid;
         persistedLayout.name = configuration.name;
 
@@ -44,7 +44,7 @@ function loadLayout(uuid) {
         layout.name = configuration.name;
         layoutSetName(configuration.name);
         configuration.controls.inputs.forEach(input => layout.addNewInput(input));
-        configuration.controls.charts.forEach(chart => layout.addNewChart(chart));
+        configuration.controls.charts.forEach(chart => layout.addNewChart(chart, true));
 
         persistedLayout.inputs = [...layout.inputs];
         persistedLayout.charts = [...layout.charts];

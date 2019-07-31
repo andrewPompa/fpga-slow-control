@@ -12,6 +12,24 @@ class HistoricConfigurationService {
         $.ajax(ajax);
     }
 
+    getData(uuid, chartId, onSuccess) {
+        const ajax = {};
+        ajax.type = "GET";
+        ajax.url = `/historic-data/${uuid}/${chartId}`;
+        ajax.contentType = "application/json";
+        ajax.dataType = "json";
+        ajax.success = onSuccess;
+        $.ajax(ajax);
+    }
+
+    makeInactive(uuid, onSuccess) {
+        const ajax = {};
+        ajax.type = "POST";
+        ajax.url = `/historic-configuration/${uuid}/inactive`;
+        ajax.success = onSuccess;
+        $.ajax(ajax);
+    }
+
     put(uuid, configuration, onSuccess) {
         const ajax = {};
         ajax.type = "PUT";
