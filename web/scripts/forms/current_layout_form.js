@@ -48,7 +48,7 @@ class CurrentLayoutForm {
         this.formControls.addList(
             'controls',
             [],
-            () => (layout.inputs && layout.inputs.length >= 1) || (layout.charts && layout.charts.length >= 1),
+            () => (this.layout.inputs && this.layout.inputs.length >= 1) || (this.layout.charts && this.layout.charts.length >= 1),
             'Please add some items to layout',
             'invalidLayoutError'
         );
@@ -66,6 +66,7 @@ class CurrentLayoutForm {
         } else if (!persistedLayout) {
             return true;
         }
+        console.log(persistedLayout);
         const persistedLayoutObject = {name: persistedLayout.name, controls: {inputs: persistedLayout.getInputs(), charts: persistedLayout.getCharts()}};
         console.log(layoutObject);
         console.log(persistedLayoutObject);
@@ -79,11 +80,21 @@ class CurrentLayoutForm {
             if (this.layout.uuid) {
                 configurationService.put(this.layout.uuid, layoutObject, () => {
                     new Toast('success', 'Layout updated').show();
+                    persistedLayout.uuid = this.layout.uuid;
+                    persistedLayout.name = this.formControls.getValue('name');
+                    persistedLayout.inputs = [...currentLayoutForm.layout.inputs];
+                    persistedLayout.charts = [...currentLayoutForm.layout.charts];
                     layoutInfoListAll();
                 });
             } else {
-                configurationService.post(layoutObject, () => {
+                configurationService.post(layoutObject, (uuid) => {
+                    console.log(uuid);
+                    this.layout.uuid = uuid;
                     new Toast('success', 'Layout created').show();
+                    persistedLayout.uuid = uuid;
+                    persistedLayout.name = this.formControls.getValue('name');
+                    persistedLayout.inputs = [...currentLayoutForm.layout.inputs];
+                    persistedLayout.charts = [...currentLayoutForm.layout.charts];
                     layoutInfoListAll();
                 });
             }

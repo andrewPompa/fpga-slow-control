@@ -64,11 +64,11 @@
         <div class="form-row align-items-center">
             <div class="col-xl-3">
                 <label class="sr-only" for="layoutNameInput">Name</label>
-                <input type="text" class="form-control mb-2" id="layoutNameInput" placeholder="Layout name" oninput="newLayout.setValue('name', this.value)">
+                <input type="text" class="form-control mb-2" id="layoutNameInput" placeholder="Layout name" oninput="currentLayoutForm.setName(this.value)">
                 <div id="layoutNameInputError" class="invalid-tooltip">Please provide item name</div>
             </div>
             <div class="col-xl-2">
-                <button type="button" class="btn w-100 btn-success mb-2" onclick="validateAndSaveLayout()">Persist <span><i class="fa fa-rocket"></i></span></button>
+                <button type="button" class="btn w-100 btn-success mb-2" onclick="currentLayoutForm.validateAndSaveLayout()">Persist <span><i class="fa fa-rocket"></i></span></button>
                 <div id="invalidLayoutError" class="invalid-tooltip">Add some input or chart to save</div>
             </div>
         </div>

@@ -112,19 +112,9 @@ function newLayoutSetTextboxWordsChanged(value) {
     }
 }
 
-function newLayoutOnChangeRadioButton(e) {
-    if (newLayoutTextboxRadio.id === e.target.id) {
-        $("#newLayoutTextboxForm").removeAttr("hidden");
-        currentLayoutForm.stop();
-    } else if (newLayoutChartRadio.id === e.target.id) {
-        $("#newLayoutTextboxForm").attr("hidden", 'hidden');
-        currentLayoutForm.start();
-    }
-}
-
 function validateAndSave(form) {
     if (form.isValid() === true) {
         const input = form.getValues();
-        layout.addNewInput(input);
+        currentLayoutForm.layout.addNewInput(input);
     }
 }

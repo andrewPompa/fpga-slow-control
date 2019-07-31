@@ -8,6 +8,7 @@ let historicalLayoutConfigurer = new HistoricalLayoutConfigurer();
 let historicConfigurationService = new HistoricConfigurationService();
 let isCurrentLayout = true;
 let currentLayoutForm = new CurrentLayoutForm();
+let isCurrentChartSelected = false;
 
 $(document).ready(() => {
     currentDataButton = $('#currentDataButton');
@@ -26,9 +27,24 @@ function onClickCurrentDataButton() {
     $('#currentDataContainer').removeAttr('hidden');
     currentDataButton.addClass("active");
     layoutInfoListAll();
-    currentLayoutForm.start();
+    if (isCurrentChartSelected === true) {
+        currentLayoutForm.start();
+
+    }
     historicalLayoutConfigurer.stop();
     isCurrentLayout = true;
+}
+
+function newLayoutOnChangeRadioButton(e) {
+    if (newLayoutTextboxRadio.id === e.target.id) {
+        $("#newLayoutTextboxForm").removeAttr("hidden");
+        currentLayoutForm.stop();
+        isCurrentChartSelected = false;
+    } else if (newLayoutChartRadio.id === e.target.id) {
+        $("#newLayoutTextboxForm").attr("hidden", 'hidden');
+        currentLayoutForm.start();
+        isCurrentChartSelected = true;
+    }
 }
 
 function onClickHistoricalDataButton() {
@@ -66,9 +82,7 @@ function layoutInfoListAll() {
 function loadLayout(uuid) {
     configurationService.get(uuid, (configuration) => {
         resetCurrentLayout();
-        persistedLayout = new Layout('chartsContainer');
-        persistedLayout.uuid = uuid;
-        persistedLayout.name = configuration.name;
+
 
         currentLayoutForm.layout.uuid = uuid;
         currentLayoutForm.layout.name = configuration.name;
@@ -76,9 +90,11 @@ function loadLayout(uuid) {
         configuration.controls.inputs.forEach(input => currentLayoutForm.layout.addNewInput(input));
         configuration.controls.charts.forEach(chart => currentLayoutForm.layout.addNewChart(chart, true));
 
+        persistedLayout = new Layout('');
+        persistedLayout.uuid = uuid;
+        persistedLayout.name = configuration.name;
         persistedLayout.inputs = [...currentLayoutForm.layout.inputs];
         persistedLayout.charts = [...currentLayoutForm.layout.charts];
-        console.log(persistedLayout);
     });
     console.log('loading layout' + uuid);
 }
