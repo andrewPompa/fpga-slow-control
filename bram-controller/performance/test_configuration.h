@@ -14,6 +14,8 @@ public:
     ulong bigTestSize = 1000000 / 4;
     std::vector<uint> addresses;
     int testMode;
+    bool saveResults = false;
+    uint saveResultsAddress = 0x0;
 };
 
 

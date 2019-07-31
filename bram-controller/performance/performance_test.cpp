@@ -31,32 +31,36 @@ TestConfiguration parseArguments(std::string const &fileName) {
     testConfiguration.numOfTests = configurationLoader.getAsULong("num.of.tests");
     testConfiguration.smallTestSize = configurationLoader.getAsULong("words.small.test");
     testConfiguration.bigTestSize = configurationLoader.getAsULong("words.big.test");
+    testConfiguration.bigTestSize = configurationLoader.getAsULong("words.big.test");
+    testConfiguration.saveResults = configurationLoader.getAsBool("save.in.ram");
+    testConfiguration.saveResultsAddress = configurationLoader.getAsWord("save.location");
+
     return testConfiguration;
 }
 
-void performProcessorTest(int mode, ulong numOfTest, ulong testSize) {
+void performProcessorTest(int mode, ulong numOfTest, ulong testSize, bool saveResults, uint saveAddress, int counter) {
     if (mode == 1) {
         ProcessorWriteTest writeTest;
-        writeTest.performTest(numOfTest, testSize);
+        writeTest.performTest(numOfTest, testSize, saveResults, saveAddress, counter);
     } else if (mode == 2) {
         ProcessorReadTest readTest;
-        readTest.performTest(numOfTest, testSize);
+        readTest.performTest(numOfTest, testSize, saveResults, saveAddress, counter);
     } else if (mode == 3) {
         ProcessorReadWriteTest readWriteTest;
-        readWriteTest.performTest(numOfTest, testSize);
+        readWriteTest.performTest(numOfTest, testSize, saveResults, saveAddress, counter);
     }
 }
 
-void performTest(int mode, uint address, ulong numOfTest, ulong testSize) {
+void performTest(int mode, uint address, ulong numOfTest, ulong testSize, bool saveResults, uint saveAddress, int counter) {
     if (mode == 1) {
         WriteTest writeTest;
-        writeTest.performTest(address, numOfTest, testSize);
+        writeTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter);
     } else if (mode == 2) {
         ReadTest readTest;
-        readTest.performTest(address, numOfTest, testSize);
+        readTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter);
     } else if (mode == 3) {
         ReadWriteTest readWriteTest;
-        readWriteTest.performTest(address, numOfTest, testSize);
+        readWriteTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter);
     }
 }
 
@@ -70,9 +74,10 @@ int main(int argc, char *argv[]) {
         testConfiguration = parseArguments(argv[1]);
         printf("Small test for %ld words\n", testConfiguration.smallTestSize);
 
-        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.smallTestSize);
-        for (uint address : testConfiguration.addresses) {
-            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.smallTestSize);
+        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.smallTestSize, testConfiguration.saveResults, testConfiguration.saveResultsAddress, 0);
+        for (int i = 0; i < testConfiguration.addresses.size(); ++i) {
+            uint address = testConfiguration.addresses[i];
+            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.smallTestSize, testConfiguration.saveResults, testConfiguration.saveResultsAddress, i + 1);
         }
 
         if (!testConfiguration.runBigTest) {
@@ -80,9 +85,10 @@ int main(int argc, char *argv[]) {
             return 0;
         }
         printf("Big test for %ld words\n", testConfiguration.bigTestSize);
-        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.bigTestSize);
-        for (uint address : testConfiguration.addresses) {
-            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.bigTestSize);
+        performProcessorTest(testConfiguration.testMode, testConfiguration.numOfTests, testConfiguration.bigTestSize, testConfiguration.saveResults, testConfiguration.saveResultsAddress, 0);
+        for (int i = 0; i < testConfiguration.addresses.size(); ++i) {
+            uint address = testConfiguration.addresses[i];
+            performTest(testConfiguration.testMode, address, testConfiguration.numOfTests, testConfiguration.bigTestSize, testConfiguration.saveResults, testConfiguration.saveResultsAddress, i + 1);
         }
     } catch (std::invalid_argument const &e) {
         printf("error during getting configuration file: %s!\n", e.what());

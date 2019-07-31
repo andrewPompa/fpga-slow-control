@@ -16,7 +16,7 @@
 
 class ProcessorReadWriteTest {
 public:
-    void performTest(ulong numOfTest, ulong testSize) {
+    void performTest(ulong numOfTest, ulong testSize, bool saveResults, uint saveAddress, int counter) {
         printf("[PROCESSOR] Running %ld tests with %ld words\n", numOfTest, testSize);
         auto *readsAndWrites = new double[numOfTest];
         auto *programMemoryBlock = new uint[testSize];
@@ -32,6 +32,15 @@ public:
             auto finishRead = std::chrono::high_resolution_clock::now();
 
             readsAndWrites[i] = (finishRead - startWrite).count();
+
+            if (saveResults && (i + 1) % 1000 == 0) {
+                TestStatistics readsAndWritesStatistics(readsAndWrites, i, testSize);
+                readsAndWritesStatistics.calculate();
+                std::shared_ptr<uint> speed(new uint[1]);
+                speed.get()[0] = readsAndWritesStatistics.speed * 5000;
+                WriteSilentCommand writeSpeedCommand(saveAddress + (counter * 4), 1, speed);
+                writeSpeedCommand.execute();
+            }
         }
 
         TestStatistics readAndWriteStatistics(readsAndWrites, numOfTest, testSize);
