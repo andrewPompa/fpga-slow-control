@@ -38,7 +38,7 @@ class MemoryManagementResource(object):
         words = self.get_encoded_data_to_write(req.stream, req.content_length)
         print words
         response = self.memory_service.put_from_base64(address_str, num_of_words, words)
-        print "patch is = " + response
+        print "patch is = " + str(response)
         resp.status = falcon.HTTP_200
 
     def on_get(self, req, resp, address):

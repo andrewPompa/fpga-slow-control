@@ -10,16 +10,18 @@ class Layout {
     }
 
     getWords(inputId) {
+        console.log(this.inputs);
         let input = this.inputs.find(i => i.id === inputId);
         if (!input) {
+            console.log(inputId + " not found");
             return;
         }
         input = input.item;
-        if (input.type === dateType.hex) {
+        if (input.dataType === dateType.hex) {
             wordService.getHex(input.address, input.words, (hex, nums) => input.setValue(hex + "([" + nums.join(',') + "])"));
-        } else if (input.type === dateType.date) {
+        } else if (input.dataType === dateType.date) {
             wordService.getInt(input.address, (seconds) => input.setValue(secondsToHourMinutesSeconds(seconds)));
-        } else if (input.type === dateType.math) {
+        } else if (input.dataType === dateType.math) {
             wordService.getMath(input.address, input.formula, (result) => input.setValue(result));
         }
     }
@@ -70,7 +72,7 @@ class Layout {
         inputItem.name = input.name;
         inputItem.address = input.address;
         inputItem.words = input.words;
-        inputItem.type = input.dataType;
+        inputItem.dataType = input.dataType;
         inputItem.readOnly = input.readOnly;
         inputItem.formula = input.formula;
         this.inputs.push({id: inputItem.id, item: inputItem});

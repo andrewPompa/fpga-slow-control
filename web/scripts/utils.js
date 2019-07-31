@@ -46,10 +46,10 @@ function hexToByteArray(hex, numOfWords) {
     hexWords.push(hex);
     for (let i = 0; i < hexWords.length; ++i) {
         const parsedWord = parseInt(hexWords[i], 16);
-        wordBytes[i * 4] = (parsedWord >> 24) & 0xFF;
-        wordBytes[i * 4 + 1] = (parsedWord >> 16) & 0xFF;
-        wordBytes[i * 4 + 2] = (parsedWord >> 8) & 0xFF;
-        wordBytes[i * 4 + 3] = parsedWord & 0xFF;
+        wordBytes[i * 4 + 3] = (parsedWord >> 24) & 0xFF;
+        wordBytes[i * 4 + 2] = (parsedWord >> 16) & 0xFF;
+        wordBytes[i * 4 + 1] = (parsedWord >> 8) & 0xFF;
+        wordBytes[i * 4] = parsedWord & 0xFF;
     }
     return wordBytes;
 }

@@ -12,6 +12,8 @@ class ConfigurationCache(object):
         self.mutex.acquire()
         try:
             self.cache = self.create_cache()
+            print 'cache loaded'
+            print self.cache
         finally:
             self.mutex.release()
 
@@ -39,6 +41,8 @@ class ConfigurationCache(object):
                 if key in self.cache:
                     new_cache[key] = self.cache[key]
             self.cache = new_cache
+            print 'cache reloaded'
+            print self.cache
         finally:
             self.mutex.release()
 

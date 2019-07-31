@@ -2,7 +2,7 @@ class InputItem {
     constructor() {
         this.id = -1;
         this.name = '';
-        this.type = '';
+        this.dataType = '';
         this.readOnly = '';
         this.address = '';
         this.words = -1;
@@ -14,7 +14,7 @@ class InputItem {
         return {
             id: this.id,
             name: this.name,
-            type: this.type,
+            dataType: this.dataType,
             readOnly: this.readOnly,
             address: this.address,
             words: this.words,
@@ -46,10 +46,10 @@ class InputItem {
 
     generate() {
         const card = new InputItemBuilder(this.id, this.name, this.address, this.words);
-        console.log(this.type);
-        if (this.type === dateType.math) {
+        console.log(this.dataType);
+        if (this.dataType === dateType.math) {
             card.addMathDataType(this.formula);
-        } else if (this.type === dateType.date) {
+        } else if (this.dataType === dateType.date) {
             card.addDateDataType();
         }
         card.addGetValueInput();
@@ -71,7 +71,7 @@ class InputItemBuilder {
                             <div class="col-md-8 offset-md-2 text-center">
                                 <h5 class="card-title">${name}</h5>
                             </div>
-                            <div class="col-md-2 text-right" style="cursor: pointer" onclick="layout.removeInput(${this.id})">
+                            <div class="col-md-2 text-right" style="cursor: pointer" onclick="currentLayoutForm.layout.removeInput(${this.id})">
                                 <span class="alert alert-danger"><i class="fa fa-times"></i></span>
                             </div>
                         </div>
@@ -108,7 +108,7 @@ class InputItemBuilder {
         this.card += `
         <div class="row mt-2">
             <div class="col-md-4">
-                <button class="btn btn-primary w-100" onclick="layout.getWords(${this.id})" >Get value</button>
+                <button class="btn btn-primary w-100" onclick="currentLayoutForm.layout.getWords(${this.id})" >Get value</button>
             </div>
             <div class="col-md-8">
                 <label class="sr-only" for="itemGetValue_${this.id}"></label>
@@ -127,7 +127,7 @@ class InputItemBuilder {
                 <div id="inputSetValue_${this.id}Error" class="invalid-tooltip"></div>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-primary w-100" onclick="layout.validateAndSendInput(${this.id})">Set value</button>
+                <button class="btn btn-primary w-100" onclick="currentLayoutForm.layout.validateAndSendInput(${this.id})">Set value</button>
             </div>
         </div>`;
         return this;
