@@ -132,10 +132,27 @@ class HistoricalLayoutConfigurer {
             return;
         }
         let values = [];
+        if (dataSeries.values.length < 1) {
+            return;
+        }
         if (chartInfoSeries.dataType === dateType.hex) {
-            values = dataSeries.values.map(value => byteArrayToNumList(base64ToByteArray(value))[0]);
+            values.push(0);
+            for (let i = 1; i < dataSeries.values.length; i++) {
+                let value = byteArrayToNumList(base64ToByteArray(dataSeries.values[i]))[0];
+                if (chartInfoSeries.deltaValue === true) {
+                    value -= byteArrayToNumList(base64ToByteArray(dataSeries.values[i - 1]))[0];
+                }
+                values.push(value);
+            }
         } else if (chartInfoSeries.dataType === dateType.math) {
-            values = dataSeries.values.map(value => base64ToMathValue(value, chartInfoSeries.formula));
+            values.push(0);
+            for (let i = 1; i < dataSeries.values.length; i++) {
+                let value = base64ToMathValue(dataSeries.values[i], chartInfoSeries.formula);
+                if (chartInfoSeries.deltaValue === true) {
+                    value -= base64ToMathValue(dataSeries.values[i -1], chartInfoSeries.formula);
+                }
+                values.push(value);
+            }
         }
         console.log(values);
         chart.setSeries(dataSeries.id, values);
@@ -164,6 +181,7 @@ class ConfiguredChartListBuilder {
 
 class ConfiguredChartSeriesListBuilder {
     static generate(series, name) {
+        const checked = series.deltaValue === true ? 'checked' : '';
         return `
             <div id="${name}_${series.id}" class="form-row align-items-center mt-2">
                 <div class="col-md-1">
@@ -181,6 +199,12 @@ class ConfiguredChartSeriesListBuilder {
                 <div class="col-md-2">
                     <label class="sr-only" for="${name}_${series.id}FormulaInput_${series.id}">Formula</label>
                     <input type="text" class="form-control" id="${name}_${series.id}FormulaInput_${series.id}" value="${series.formula}" readonly>
+                </div>
+                <div class="col-xl-1" style="text-align: center">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="${name}_${series.id}DeltaValue_${series.id}">
+                        <label class="custom-control-label" for="${name}DeltaValue_${series.id}" ${checked}>Calc delta with previous value</label>
+                    </div>
                 </div>
             </div>`;
     }

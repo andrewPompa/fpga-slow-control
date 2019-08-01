@@ -51,7 +51,9 @@ class ChartItem {
                 address: dataset.address,
                 dataType: dataset.dataType,
                 formula: dataset.formula,
-                id: dataset.id
+                id: dataset.id,
+                deltaValue: dataset.deltaValue,
+                results: []
             };
         });
         this.chart = new Chart(ctx, {
@@ -73,9 +75,23 @@ class ChartItem {
         this.chart.data.labels.push(currentTimeInMillis());
         this.chart.data.datasets.forEach(dataset => {
             if (dataset.dataType === dateType.hex) {
-                wordService.getInt(dataset.address, (value) => this.addData(value, dataset));
+                wordService.getInt(dataset.address, (value) => {
+                    if (dataset.deltaValue === true) {
+                        const previous = dataset.results.length > 0 ? dataset.results[dataset.results.length - 1] : value;
+                        dataset.results.push(value);
+                        value = value - previous;
+                    }
+                    this.addData(value, dataset)
+                });
             } else if (dataset.dataType === dateType.math) {
-                wordService.getMath(dataset.address, dataset.formula, (value) => this.addData(value, dataset));
+                wordService.getMath(dataset.address, dataset.formula, (value) => {
+                    if (dataset.deltaValue === true) {
+                        const previous = dataset.results.length > 0 ? dataset.results[dataset.results.length - 1] : value;
+                        dataset.results.push(value);
+                        value = value - previous;
+                    }
+                    this.addData(value, dataset)
+                });
             }
 
         });

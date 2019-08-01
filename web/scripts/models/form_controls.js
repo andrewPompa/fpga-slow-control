@@ -77,6 +77,9 @@ class FormControls {
 
     checkValidity(control) {
         let isValid = true;
+        if (!control.errorDiv) {
+            return true;
+        }
         const errorControl = $(`#${control.errorDiv}`);
         if (!control.validationFunction(control.value)) {
             isValid = false;

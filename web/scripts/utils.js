@@ -15,7 +15,7 @@ function byteArrayToNumList(array) {
     for (let k = 0; k < array.length; ++k) {
         w |= array[k] << (8 * (k - Math.floor(k / 4) * 4));
         if ((k + 1) % 4 === 0 || k === array.length - 1) {
-            numbers[Math.floor(k / 4)] = w;
+            numbers[Math.floor(k / 4)] = w >>> 0;
             w = 0;
         }
     }

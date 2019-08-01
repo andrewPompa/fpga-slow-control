@@ -51,6 +51,7 @@ class ChartForm {
             'Please provide formula which contains \'x\' variable',
             `${this.name}AddSeriesFormulaInputError`
         );
+        this.seriesFormControls.add('deltaValue', false, (value) => true, '', '');
     }
 
     registerInputs() {
@@ -58,6 +59,7 @@ class ChartForm {
         $(`#${this.name}IntervalInput`).on('input', (e) => this.formControls.setValue('interval', e.currentTarget.value));
         $(`#${this.name}NameInput`).on('input', (e) => this.seriesFormControls.setValue('name', e.currentTarget.value));
         $(`#${this.name}AddressInput`).on('input', (e) => this.seriesFormControls.setValue('address', e.currentTarget.value));
+        $(`#${this.name}DeltaValue`).on('change', (e) => {console.log(e.currentTarget.checked); this.seriesFormControls.setValue('deltaValue', e.currentTarget.checked)});
         $(`#${this.name}AddSeriesFormulaInput`).on('input', (e) => this.seriesFormControls.setValue('formula', e.currentTarget.value));
 
         $(`#${this.name}HexButton`).on('click', () => this.onChangeDateTypeForChart(dateType.hex, 'Hexadecimal value'));
@@ -106,7 +108,9 @@ class ChartForm {
 
             series.dataTypeValue = (series.dataType === dateType.hex) ? 'Hexadecimal value' : 'Mathematical value';
             const seriesDiv = ChartSeriesBuilder.generate(series, this.name);
+            console.log('before');
             $(`#${this.name}SeriesContainer`).append(seriesDiv);
+            console.log('after');
             $(`#${series.id}DeleteSeries`).on('click', () => this.deleteSeries(series.id));
             this.clearSeries();
         }
@@ -172,6 +176,12 @@ class ChartFormBuilder {
                 </div>
                 <div id="${name}AddSeriesDataTypeError" class="invalid-tooltip"></div>
             </div>
+            <div class="col-xl-1" style="text-align: center">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="${name}DeltaValue">
+                    <label class="custom-control-label" for="${name}DeltaValue">Calc delta with previous value</label>
+                </div>
+            </div>
             <div class="col-xl-2">
                 <label class="sr-only" for="{name}AddSeriesFormulaInput">Formula</label>
                 <input type="text" class="form-control" id="${name}AddSeriesFormulaInput" placeholder="Formula">
@@ -197,25 +207,32 @@ class ChartFormBuilder {
 
 class ChartSeriesBuilder {
     static generate(series, name) {
+        const checked = series.deltaValue === true ? 'checked' : '';
         return `
             <div id="${name}_${series.id}" class="form-row align-items-center mt-2">
-                <div class="col-md-1">
+                <div class="col-xl-1">
                     <label class="sr-only" for="${name}_${series.id}NameInput">Series name</label>
                     <input type="text" class="form-control" id="${name}_${series.id}NameInput_${series.id}" value="${series.name}" readonly>
                 </div>
-                <div class="col-md-1">
+                <div class="col-xl-1">
                     <label class="sr-only" for="${name}_${series.id}AddressInput_${series.id}">Address</label>
                     <input type="text" class="form-control" id="${name}_${series.id}AddressInput_${series.id}" value="${series.address}" readonly>
                 </div>
-                <div class="col-md-2">
+                <div class="col-xl-2">
                     <label class="sr-only" for="${name}_${series.id}DataTypeInput_${series.id}">Data type</label>
                     <input type="text" class="form-control" id="${name}_${series.id}DataTypeInput_${series.id}" value="${series.dataTypeValue}" readonly>
                 </div>
-                <div class="col-md-2">
+                <div class="col-xl-2">
                     <label class="sr-only" for="${name}_${series.id}FormulaInput_${series.id}">Formula</label>
                     <input type="text" class="form-control" id="${name}_${series.id}FormulaInput_${series.id}" value="${series.formula}" readonly>
                 </div>
-                <div class="col-md-1">
+                <div class="col-xl-1" style="text-align: center">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="${name}DeltaValue_${series.id}" ${checked} readonly>
+                        <label class="custom-control-label" for="${name}DeltaValue_${series.id}">Calc delta with previous value</label>
+                    </div>
+                </div>
+                <div class="col-xl-1">
                     <button type="button" id="${series.id}DeleteSeries" class="btn w-100 btn-danger">Delete series <span><i class="fa fa-times"></i></span></button>
                 </div>
             </div>`;
