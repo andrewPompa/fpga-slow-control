@@ -24,8 +24,12 @@ file(GLOB bram_controller_SRC
         "utils/hex_argument_reader.hpp"
         "commands/write/write_program_memory_command.hpp"
         "commands/write/performance_check_read_command.hpp"
+        "commands/write/write_silent_memcpy_command.hpp"
+        "commands/write/write_silent_memcpy_custom_command.hpp.hpp"
         "commands/write/read_program_memory_command.hpp"
         "../program_settings.h"
+        "utils/memcpy_custom.h"
+        "utils/memcpy_custom.c"
         )
 
 add_executable(bram_controller bram_controller.cpp ${bram_controller_SRC})
