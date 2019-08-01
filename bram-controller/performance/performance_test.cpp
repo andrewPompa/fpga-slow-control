@@ -21,6 +21,8 @@
 #include "tests/write_test.hpp"
 #include "tests/read_test.hpp"
 #include "tests/read_write_test.hpp"
+#include "tests/write_memcpy_custom_test.hpp"
+#include "tests/write_memcpy_test.hpp"
 
 TestConfiguration parseArguments(std::string const &fileName) {
     ConfigurationLoader configurationLoader(fileName);
@@ -55,6 +57,12 @@ void performTest(int mode, uint address, ulong numOfTest, ulong testSize, bool s
     if (mode == 1) {
         WriteTest writeTest;
         writeTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter);
+
+        WriteMemcpyTest writeMemcpyTest;
+        writeMemcpyTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter + 1);
+
+        WriteMemcpyCustomTest writeMemcpyCustomTest;
+        writeMemcpyCustomTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter + 2);
     } else if (mode == 2) {
         ReadTest readTest;
         readTest.performTest(address, numOfTest, testSize, saveResults, saveAddress, counter);
