@@ -93,8 +93,6 @@ function clearNewLayoutTextboxForm() {
     newLayoutTextboxForm.setValueNoValidate('dataType', '');
     newLayoutTextboxForm.setValueNoValidate('formula', '');
     newLayoutTextboxForm.setValueNoValidate('readOnly', false);
-
-    $('#inputsContainer').html('');
 }
 
 function newLayoutChangeReadOnly() {

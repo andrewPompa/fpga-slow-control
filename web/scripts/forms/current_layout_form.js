@@ -32,10 +32,7 @@ class CurrentLayoutForm {
     }
 
     reset() {
-        this.chartForm = new ChartForm();
-        this.chartForm.addListener(this);
         this.registerFormControls();
-        $('#chartsContainer').html('');
         this.layout.charts.forEach(chart => chart.removeInterval());
         this.layout = new Layout('chartsContainer');
 

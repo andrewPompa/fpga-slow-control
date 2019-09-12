@@ -15,11 +15,15 @@ $(document).ready(() => {
     currentDataButton.click();
     resetCurrentLayout();
     $('#layoutNameInput').val('');
+    currentLayoutForm.start();
 });
 
 function resetCurrentLayout() {
+    $('#layoutNameInput').val('');
     currentLayoutForm.reset();
+    $('#chartsContainer').html('');
     clearNewLayoutTextboxForm();
+    $('#inputsContainer').html('');
 }
 
 function onClickCurrentDataButton() {
@@ -39,11 +43,11 @@ function onClickCurrentDataButton() {
 function newLayoutOnChangeRadioButton(e) {
     if (newLayoutTextboxRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").removeAttr("hidden");
-        currentLayoutForm.stop();
+        currentLayoutForm.chartForm.hide();
         isCurrentChartSelected = false;
     } else if (newLayoutChartRadio.id === e.target.id) {
         $("#newLayoutTextboxForm").attr("hidden", 'hidden');
-        currentLayoutForm.start();
+        currentLayoutForm.chartForm.show();
         isCurrentChartSelected = true;
     }
 }
@@ -61,9 +65,6 @@ function onClickHistoricalDataButton() {
     $('#activeLayoutViewContainer').attr('hidden', '');
     $('#currentDataContainer').attr('hidden', '');
     historicalLayoutConfigurer.start();
-
-    $('#newLayoutChartFormContainer').html('');
-
     isCurrentLayout = false;
 
 }

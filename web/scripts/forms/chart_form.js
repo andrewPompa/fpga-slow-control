@@ -11,10 +11,19 @@ class ChartForm {
     }
 
     generate(container) {
+        this.container = container;
         const chart = ChartFormBuilder.generate(this.name);
         $('#' + container).html(chart);
         this.registerInputs();
         this.clearForm();
+    }
+
+    hide() {
+        $('#' + this.container).attr("hidden", 'hidden');
+    }
+
+    show() {
+        $('#' + this.container).removeAttr("hidden");
     }
 
     setFormControls() {
